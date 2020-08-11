@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const expressWs = require("express-ws");
 const chalk = require("chalk");
 const { v4: uuidv4 } = require("uuid");
+const favicon = require("serve-favicon");
+const path = require("path");
 
 const apiContracts = require("../contract.js");
 
@@ -34,7 +36,7 @@ function serverLog(data, color, type) {
   }
 }
 
-app.use("/favicon.ico", express.static("./public/favicon.ico"));
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
