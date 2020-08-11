@@ -34,6 +34,8 @@ function serverLog(data, color, type) {
   }
 }
 
+app.use("/favicon.ico", express.static("./public/favicon.ico"));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((_req, res, next) => {
