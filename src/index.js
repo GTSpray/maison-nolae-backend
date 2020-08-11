@@ -6,6 +6,8 @@ const { v4: uuidv4 } = require("uuid");
 
 const apiContracts = require("../contract.js");
 
+const frontUrl = require("../.config/endpoint.js");
+
 const Ajv = require("ajv");
 const ajv = Ajv({ allErrors: true });
 const validatePlayer = ajv.compile(apiContracts);
@@ -35,7 +37,7 @@ function serverLog(data, color, type) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://j0mbr.csb.app");
+  res.header("Access-Control-Allow-Origin", frontUrl);
   res.header("Access-Control-Allow-Methods", "*");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Max-Age", "1728000");
