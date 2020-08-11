@@ -35,7 +35,7 @@ function serverLog(data, color, type) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://4en1y.csb.app");
+  res.header("Access-Control-Allow-Origin", "https://j0mbr.csb.app");
   res.header("Access-Control-Allow-Methods", "*");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Max-Age", "1728000");
