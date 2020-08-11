@@ -8,7 +8,7 @@ const path = require("path");
 
 const apiContracts = require("../contract.js");
 
-const frontUrl = require("../.config/endpoint.js");
+const config = require("../.config/endpoint.js");
 
 const Ajv = require("ajv");
 const ajv = Ajv({ allErrors: true });
@@ -41,7 +41,7 @@ app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", frontUrl);
+  res.header("Access-Control-Allow-Origin", config.frontUrl);
   res.header("Access-Control-Allow-Methods", "*");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Max-Age", "1728000");
