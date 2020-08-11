@@ -41,7 +41,7 @@ app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", config.frontUrl);
+  res.header("Access-Control-Allow-Origin", config.fronturl);
   res.header("Access-Control-Allow-Methods", "*");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Max-Age", "1728000");
