@@ -36,6 +36,7 @@ function serverLog(data, color, type) {
   }
 }
 
+app.set('port', (process.env.PORT || 8080))
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -132,7 +133,6 @@ app.ws("/", (ws, req) => {
   });
 });
 
-const port = 8080;
-app.listen(port, () => {
-  serverLog(`Server listening at http://localhost:${port}`, "blue", "Server");
-});
+app.listen(app.get('port'), function() {
+  serverLog(`Server listening at http://localhost:${app.get('port')}`, "blue", "Server");
+})
