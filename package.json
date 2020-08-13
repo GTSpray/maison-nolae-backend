@@ -4,7 +4,10 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "node src/index.js"
+  },
+   "engines": {
+    "node": "12.18.2"
   },
   "dependencies": {
     "ajv": "6.12.3",
