@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon src/index.js"
   },
-   "engines": {
-    "node": "12.18.2"
+  "engines": {
+    "node": "10.21.0"
   },
   "dependencies": {
     "ajv": "6.12.3",
