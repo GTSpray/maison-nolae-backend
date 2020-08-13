@@ -1,3 +1,3 @@
 module.exports = {
-  fronturl: "https://maison-nolae-back.herokuapp.com"
+  fronturl: "https://maison-nolae.herokuapp.com"
 };
