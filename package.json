@@ -16,6 +16,7 @@
     "express": "4.17.1",
     "express-ws": "4.0.0",
     "jest": "26.2.2",
+    "node-fetch": "2.6.0",
     "nodemon": "2.0.4",
     "serve-favicon": "2.5.0",
     "uuid": "8.3.0"
