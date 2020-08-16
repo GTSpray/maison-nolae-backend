@@ -11,5 +11,16 @@ module.exports = {
       x: { type: "integer", minimum: 0, maximum: 1478 },
       y: { type: "integer", minimum: 0, maximum: 712 }
     }
+  },
+  websocket: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      type: { type: "string", pattern: "^[a-z]+$" },
+      payload: {
+        type: "object"
+      }
+    },
+    required: ["type", "payload"]
   }
 };

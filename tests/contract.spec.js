@@ -137,4 +137,85 @@ describe("API contract", () => {
       });
     });
   });
+
+  describe("event", () => {
+    const validateEvent = ajv.compile(apiContracts.websocket);
+    const contract = apiContracts.websocket.properties;
+
+    const event = {
+      type: "validtype",
+      payload: {
+        message: "valid payload"
+      }
+    };
+
+    describe("should be valid", () => {
+      it("when type is string and payload is an object", () => {
+        const valid = validateEvent(event);
+        expect(valid).toBe(true);
+        expect(validateEvent.errors).toEqual(null);
+      });
+    });
+
+    describe("should be invalid", () => {
+      [1, {}, null].forEach((type) => {
+        it(`when "${type}" is used as type`, () => {
+          const valid = validateEvent({
+            ...event,
+            type
+          });
+          expect(valid).toBe(false);
+          expect(validateEvent.errors).toEqual([
+            {
+              dataPath: ".type",
+              keyword: "type",
+              message: "should be string",
+              params: {
+                type: "string"
+              },
+              schemaPath: "#/properties/type/type"
+            }
+          ]);
+        });
+      });
+
+      it(`when undefined is used as type`, () => {
+        const valid = validateEvent({
+          ...event,
+          type: undefined
+        });
+        expect(valid).toBe(false);
+        expect(validateEvent.errors).toEqual([
+          {
+            dataPath: "",
+            keyword: "required",
+            message: "should have required property 'type'",
+            params: {
+              missingProperty: "type"
+            },
+            schemaPath: "#/required"
+          }
+        ]);
+      });
+
+      ["", "_", " ", ". "].forEach((type) => {
+        it(`when "${type}" is used as type`, () => {
+          const valid = validateEvent({
+            ...event,
+            type
+          });
+          expect(valid).toBe(false);
+          expect(validateEvent.errors).toEqual([
+            {
+              dataPath: ".type",
+              keyword: "pattern",
+              message: `should match pattern "${contract.type.pattern}"`,
+              params: { pattern: contract.type.pattern },
+              schemaPath: "#/properties/type/pattern"
+            }
+          ]);
+        });
+      });
+    });
+  });
 });
