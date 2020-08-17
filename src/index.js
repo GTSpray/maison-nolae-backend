@@ -184,20 +184,20 @@ wss.on("connection", (ws) => {
     })
 
     .on("authentication", (payload) => {
-      authService.verify(payload.token, (_err, decoded) => {
-        const valid = validateAuthentication(payload);
-        if (valid) {
+      const valid = validateAuthentication(payload);
+      if (valid) {
+        authService.verify(payload.token, (_err, decoded) => {
           session = Array.from(sessions.values()).find(
             (s) => (s.player.id = decoded.id)
           );
           if (!session) {
             ws.send("Unable to get your session");
           }
-        } else {
-          console.error(validateAuthentication.errors);
-          ws.send("Invalid auth method");
-        }
-      });
+        });
+      } else {
+        console.error(validateAuthentication.errors);
+        ws.send("Invalid auth method");
+      }
     })
     .on("player", (payload) => {
       if (session) {
