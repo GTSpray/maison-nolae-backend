@@ -15,7 +15,7 @@ const config = require("../.config/endpoint.js");
 const Ajv = require("ajv");
 const ajv = Ajv({ allErrors: true });
 
-const sessions = new Map();
+const authenticatedUsers = new Map();
 
 function serverLog(data, color, type) {
   const d = new Date(Date.now());
@@ -58,7 +58,9 @@ const app = express()
     res.json(apiContracts);
   })
   .get("/players", (_req, res) => {
-    const players = Array.from(sessions.values()).map((e) => e.player);
+    const players = Array.from(authenticatedUsers.values()).map(
+      (e) => e.player
+    );
     res.json(players);
   })
   .post("/auth", (req, res) => {
@@ -105,8 +107,8 @@ const app = express()
             )
           ) {
             const pseudo = `${user.username}#${user.discriminator}`;
-            if (!sessions.has(pseudo)) {
-              sessions.set(pseudo, {
+            if (!authenticatedUsers.has(pseudo)) {
+              authenticatedUsers.set(pseudo, {
                 discord: pseudo,
                 player: {
                   id: uuidv4(),
@@ -117,7 +119,7 @@ const app = express()
                 ws: []
               });
             }
-            const session = sessions.get(pseudo);
+            const session = authenticatedUsers.get(pseudo);
             res.json({
               player: session.player,
               token: authService.issue({
@@ -172,7 +174,7 @@ wss.on("connection", (ws) => {
       session.ws = session.ws.filter((e) => e !== ws);
       if (session.ws.lengt === 0) {
         serverLog(`Player quit ${session.player.id}`, "green", "WS Server");
-        sessions.delete(session.discord);
+        authenticatedUsers.delete(session.discord);
       }
     }
   });
@@ -187,11 +189,13 @@ wss.on("connection", (ws) => {
       const valid = validateAuthentication(payload);
       if (valid) {
         authService.verify(payload.token, (_err, decoded) => {
-          session = Array.from(sessions.values()).find(
+          session = Array.from(authenticatedUsers.values()).find(
             (s) => (s.player.id = decoded.id)
           );
           if (!session) {
             ws.send("Unable to get your session");
+          } else {
+            session.ws.push(ws);
           }
         });
       } else {
@@ -209,7 +213,7 @@ wss.on("connection", (ws) => {
             id
           };
           const ps = JSON.stringify(session.player);
-          sessions.forEach((s) => {
+          authenticatedUsers.forEach((s) => {
             for (const i in s.ws) {
               if (s.ws.hasOwnProperty(i)) {
                 s.ws[i].send(ps);
