@@ -1,0 +1,27 @@
+version: 2
+jobs:
+    build-test:
+        docker:
+            - image: circleci/node:10
+        steps:
+            - checkout
+            - run:
+                name: Install depndencies
+                command: npm install
+            - run:
+                name: Test
+                command: npm run test:ci
+                environment:
+                - NODE_ENV: production
+                - fronturl: https://localhost:8080
+                - jwt_secret: s3cr3t_of_doom
+                - oauth_discord_client_id: 111111111111111111
+                - oauth_discord_client_secret: QUendeindeidneit-drrfrfrflprlp-T
+                - oauth_discord_id_server_discord: 111111111111111111
+                - oauth_discord_redirect_uri: https://localhost:8080
+                - PORT: 1337
+workflows:
+    version: 2
+    build-deploy:
+        jobs:
+            - build-test
