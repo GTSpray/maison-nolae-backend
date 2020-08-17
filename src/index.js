@@ -14,7 +14,6 @@ const config = require("../.config/endpoint.js");
 
 const Ajv = require("ajv");
 const ajv = Ajv({ allErrors: true });
-const validatePlayer = ajv.compile(apiContracts.player);
 
 const sessions = new Map();
 
@@ -106,19 +105,19 @@ const app = express()
             )
           ) {
             const pseudo = `${user.username}#${user.discriminator}`;
-            const session = sessions.has(pseudo)
-              ? sessions.get(pseudo)
-              : {
-                  discord: pseudo,
-                  player: {
-                    id: uuidv4(),
-                    pseudo,
-                    x: 0,
-                    y: 0
-                  },
-                  ws: []
-                };
-
+            if (!sessions.has(pseudo)) {
+              sessions.set(pseudo, {
+                discord: pseudo,
+                player: {
+                  id: uuidv4(),
+                  pseudo,
+                  x: 0,
+                  y: 0
+                },
+                ws: []
+              });
+            }
+            const session = sessions.get(pseudo);
             res.json({
               player: session.player,
               token: authService.issue({
@@ -150,6 +149,8 @@ const app = express()
 const { Server } = require("ws");
 const wss = new Server({ server: app });
 const validateWebsocket = ajv.compile(apiContracts.websocket);
+const validatePlayer = ajv.compile(apiContracts.player);
+const validateAuthenticate = ajv.compile(apiContracts.authenticate);
 function toEvent(message) {
   try {
     var event = JSON.parse(message);
@@ -184,11 +185,17 @@ wss.on("connection", (ws) => {
 
     .on("authenticate", (payload) => {
       authService.verify(payload.token, (decoded) => {
-        session = Array.from(sessions.values()).find(
-          (s) => (s.player.id = decoded.id)
-        );
-        if (!session) {
-          ws.send("Unable to get your session");
+        const valid = validateAuthenticate(payload);
+        if (valid) {
+          session = Array.from(sessions.values()).find(
+            (s) => (s.player.id = decoded.id)
+          );
+          if (!session) {
+            ws.send("Unable to get your session");
+          }
+        } else {
+          console.error(validateAuthenticate.errors);
+          ws.send("Invalid auth method");
         }
       });
     })

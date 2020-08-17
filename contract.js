@@ -22,5 +22,15 @@ module.exports = {
       }
     },
     required: ["type", "payload"]
+  },
+  authenticate: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      token: {
+        type: "string",
+        pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
+      }
+    }
   }
 };
