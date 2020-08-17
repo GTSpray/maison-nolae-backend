@@ -150,7 +150,7 @@ const { Server } = require("ws");
 const wss = new Server({ server: app });
 const validateWebsocket = ajv.compile(apiContracts.websocket);
 const validatePlayer = ajv.compile(apiContracts.player);
-const validateAuthenticate = ajv.compile(apiContracts.authenticate);
+const validateAuthentication = ajv.compile(apiContracts.authentication);
 function toEvent(message) {
   try {
     var event = JSON.parse(message);
@@ -183,9 +183,9 @@ wss.on("connection", (ws) => {
       ws.send(JSON.stringify(error));
     })
 
-    .on("authenticate", (payload) => {
+    .on("authentication", (payload) => {
       authService.verify(payload.token, (decoded) => {
-        const valid = validateAuthenticate(payload);
+        const valid = validateAuthentication(payload);
         if (valid) {
           session = Array.from(sessions.values()).find(
             (s) => (s.player.id = decoded.id)
@@ -194,7 +194,7 @@ wss.on("connection", (ws) => {
             ws.send("Unable to get your session");
           }
         } else {
-          console.error(validateAuthenticate.errors);
+          console.error(validateAuthentication.errors);
           ws.send("Invalid auth method");
         }
       });

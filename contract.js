@@ -23,7 +23,7 @@ module.exports = {
     },
     required: ["type", "payload"]
   },
-  authenticate: {
+  authentication: {
     type: "object",
     additionalProperties: false,
     properties: {
