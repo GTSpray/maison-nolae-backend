@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const chalk = require("chalk");
-const { uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const favicon = require("serve-favicon");
 const path = require("path");
 const fetch = require("node-fetch");
@@ -98,47 +98,47 @@ const app = express()
         .then((resp) => Promise.all(resp.map((r) => r.json())))
         .then((infos) => {
           const [user, guilds] = infos;
-          if (user && guilds) {
-            if (
-              guilds.some(
-                (e) => e.id === process.env.oauth_discord_id_server_discord
-              )
-            ) {
-              const pseudo = `${user.username}#${user.discriminator}`;
-              const session = sessions.has(pseudo)
-                ? sessions.get(pseudo)
-                : {
-                    discord: pseudo,
-                    player: {
-                      id: uuidv4(),
-                      pseudo,
-                      x: 0,
-                      y: 0
-                    },
-                    ws: []
-                  };
+          if (
+            user &&
+            guilds &&
+            guilds.some(
+              (e) => e.id === process.env.oauth_discord_id_server_discord
+            )
+          ) {
+            const pseudo = `${user.username}#${user.discriminator}`;
+            const session = sessions.has(pseudo)
+              ? sessions.get(pseudo)
+              : {
+                  discord: pseudo,
+                  player: {
+                    id: uuidv4(),
+                    pseudo,
+                    x: 0,
+                    y: 0
+                  },
+                  ws: []
+                };
 
-              res.json({
-                player: session.player,
-                token: authService.issue({
-                  id: session.player.id
-                })
-              });
-            }
-          } else {
             res.json({
+              player: session.player,
+              token: authService.issue({
+                id: session.player.id
+              })
+            });
+          } else {
+            res.status(401).json({
               message: "error"
             });
           }
         })
         .catch((e) => {
           console.error(e);
-          res.json({
+          res.status(500).json({
             message: "error"
           });
         });
     } else {
-      res.json({
+      res.status(401).json({
         message: "no authent"
       });
     }
