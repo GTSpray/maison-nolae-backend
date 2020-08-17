@@ -184,7 +184,7 @@ wss.on("connection", (ws) => {
     })
 
     .on("authentication", (payload) => {
-      authService.verify(payload.token, (decoded) => {
+      authService.verify(payload.token, (_err, decoded) => {
         const valid = validateAuthentication(payload);
         if (valid) {
           session = Array.from(sessions.values()).find(
@@ -220,7 +220,7 @@ wss.on("connection", (ws) => {
           console.error(session.player.id, validatePlayer.errors);
         }
       } else {
-        ws.send("Non authentified session");
+        ws.send("Not authentified session");
         console.error("Not authentified session");
       }
     });
