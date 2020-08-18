@@ -153,21 +153,6 @@ const wss = new Server({ server: app })
 const validateWebsocket = ajv.compile(apiContracts.websocket)
 const validatePlayer = ajv.compile(apiContracts.player)
 const validateAuthentication = ajv.compile(apiContracts.authentication)
-function toEvent (message) {
-  try {
-    var event = JSON.parse(message)
-    const valid = validateWebsocket(event)
-    if (!valid) {
-      throw validateWebsocket.errors[0]
-    }
-    this.emit(event.type, event.payload)
-  } catch (error) {
-    console.error('not an event', error)
-    this.emit('_error', {
-      error: 'invalid event'
-    })
-  }
-}
 
 wss.on('connection', (ws) => {
   let session = null
@@ -180,8 +165,21 @@ wss.on('connection', (ws) => {
       }
     }
   })
-
-  ws.on('message', toEvent)
+  ws.on('message', (message) => {
+    try {
+      var event = JSON.parse(message)
+      const valid = validateWebsocket(event)
+      if (!valid) {
+        throw validateWebsocket.errors[0]
+      }
+      ws.emit(event.type, event.payload)
+    } catch (error) {
+      console.error('not an event', error)
+      ws.emit('_error', {
+        error: 'invalid event'
+      })
+    }
+  })
 
     .on('_error', (error) => {
       ws.send(JSON.stringify(error))
