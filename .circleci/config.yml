@@ -6,8 +6,11 @@ jobs:
         steps:
             - checkout
             - run:
-                name: Install depndencies
+                name: Install dependencies
                 command: npm install
+            - run:
+                name: Lint
+                command: npm run lint
             - run:
                 name: Start Server
                 command: npm run start:daemon
