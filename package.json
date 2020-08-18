@@ -1,6 +1,6 @@
 {
   "name": "maison-nolae-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend of Maison de Nolae project",
   "license": "Beerware",
   "main": "src/index.js",
