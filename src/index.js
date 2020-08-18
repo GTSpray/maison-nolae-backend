@@ -163,7 +163,9 @@ function toEvent(message) {
     this.emit(event.type, event.payload);
   } catch (error) {
     console.error("not an event", error);
-    this.emit("_error", error);
+    this.emit("_error", {
+      error: "invalid event"
+    });
   }
 }
 
@@ -193,14 +195,18 @@ wss.on("connection", (ws) => {
             (s) => (s.player.id = decoded.id)
           );
           if (!session) {
-            ws.send("Unable to get your session");
+            ws.emit("_error", {
+              error: "Unable to get your session"
+            });
           } else {
             session.ws.push(ws);
           }
         });
       } else {
         console.error(validateAuthentication.errors);
-        ws.send("Invalid auth method");
+        ws.emit("_error", {
+          error: "Invalid auth method"
+        });
       }
     })
     .on("player", (payload) => {
