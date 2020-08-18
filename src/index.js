@@ -1,10 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const chalk = require('chalk')
 const { v4: uuidv4 } = require('uuid')
 const favicon = require('serve-favicon')
 const path = require('path')
 const fetch = require('node-fetch')
+const { serverLog } = require('./serverLog')
 
 const authService = require('./auth.service')
 
@@ -16,25 +16,6 @@ const Ajv = require('ajv')
 const ajv = Ajv({ allErrors: true })
 
 const authenticatedUsers = new Map()
-
-function serverLog (data, color, type) {
-  const d = new Date(Date.now())
-  let log = ''
-  data = data.toString().split(/\r?\n/)
-  data.forEach((line) => {
-    log += `  ${line}\n`
-  })
-  if (/[0-9A-z]+/.test(log)) {
-    console.log(
-      chalk[color].bold(` ┏ ${type} -------------------`) +
-        '\n\n' +
-        log +
-        '\n' +
-        chalk[color].bold(` ┗ ${d.toLocaleString()} ------`) +
-        '\n'
-    )
-  }
-}
 
 const port = process.env.PORT || 8080
 const app = express()
@@ -108,10 +89,12 @@ const app = express()
           ) {
             const pseudo = `${user.username}#${user.discriminator}`
             if (!authenticatedUsers.has(pseudo)) {
+              const id = uuidv4()
+              serverLog(`${pseudo} ${id}`, 'green', 'WS Server')
               authenticatedUsers.set(pseudo, {
                 discord: pseudo,
                 player: {
-                  id: uuidv4(),
+                  id,
                   pseudo: user.username,
                   x: 0,
                   y: 0
@@ -123,7 +106,8 @@ const app = express()
             res.json({
               player: session.player,
               token: authService.issue({
-                id: session.player.id
+                id: session.player.id,
+                pseudo
               })
             })
           } else {
@@ -188,15 +172,13 @@ wss.on('connection', (ws) => {
     .on('authentication', (payload) => {
       const valid = validateAuthentication(payload)
       if (valid) {
-        authService.verify(payload.token, (_err, decoded) => {
-          session = Array.from(authenticatedUsers.values()).find(
-            (s) => (s.player.id = decoded.id)
-          )
-          if (!session) {
+        authService.verify(payload.token, (err, decoded) => {
+          if (err || !authenticatedUsers.has(decoded.pseudo)) {
             ws.emit('_error', {
               error: 'Unable to get your session'
             })
           } else {
+            session = authenticatedUsers.get(decoded.pseudo)
             session.ws.push(ws)
           }
         })
