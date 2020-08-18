@@ -10,7 +10,7 @@ jobs:
                 command: npm install
             - run:
                 name: Start Server
-                command: npm start:deamon
+                command: npm run start:daemon
                 environment:
                 - NODE_ENV: production
                 - fronturl: https://localhost:8080
