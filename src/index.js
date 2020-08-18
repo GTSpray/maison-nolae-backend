@@ -107,6 +107,7 @@ const app = express()
             )
           ) {
             const pseudo = `${user.username}#${user.discriminator}`
+            console.error(pseudo)
             if (!authenticatedUsers.has(pseudo)) {
               authenticatedUsers.set(pseudo, {
                 discord: pseudo,
@@ -155,12 +156,13 @@ const validatePlayer = ajv.compile(apiContracts.player)
 const validateAuthentication = ajv.compile(apiContracts.authentication)
 
 wss.on('connection', (ws) => {
+  let session = null
   ws.on('close', () => {
-    if (ws.session) {
-      ws.session.ws = ws.session.ws.filter((e) => e !== ws)
-      if (ws.session.ws.lengt === 0) {
-        serverLog(`Player quit ${ws.session.player.id}`, 'green', 'WS Server')
-        authenticatedUsers.delete(ws.session.discord)
+    if (session) {
+      session.ws = session.ws.filter((e) => e !== ws)
+      if (session.ws.lengt === 0) {
+        serverLog(`Player quit ${session.player.id}`, 'green', 'WS Server')
+        authenticatedUsers.delete(session.discord)
       }
     }
   })
@@ -188,15 +190,15 @@ wss.on('connection', (ws) => {
       const valid = validateAuthentication(payload)
       if (valid) {
         authService.verify(payload.token, (_err, decoded) => {
-          ws.session = Array.from(authenticatedUsers.values()).find(
+          session = Array.from(authenticatedUsers.values()).find(
             (s) => (s.player.id = decoded.id)
           )
-          if (!ws.session) {
+          if (!session) {
             ws.emit('_error', {
               error: 'Unable to get your session'
             })
           } else {
-            ws.session.ws.push(ws)
+            session.ws.push(ws)
           }
         })
       } else {
@@ -207,15 +209,15 @@ wss.on('connection', (ws) => {
       }
     })
     .on('player', (payload) => {
-      if (ws.session) {
+      if (session) {
         const valid = validatePlayer(payload)
         if (valid) {
-          const id = ws.session.player.id
-          ws.session.player = {
+          const id = session.player.id
+          session.player = {
             ...payload,
             id
           }
-          const ps = JSON.stringify(ws.session.player)
+          const ps = JSON.stringify(session.player)
           authenticatedUsers.forEach((s) => {
             for (const i in s.ws) {
               if (Object.prototype.hasOwnProperty.call(s.ws, i)) {
@@ -224,7 +226,7 @@ wss.on('connection', (ws) => {
             }
           })
         } else {
-          console.error(ws.session.player.id, validatePlayer.errors)
+          console.error(session.player.id, validatePlayer.errors)
         }
       } else {
         ws.send('Not authentified session')

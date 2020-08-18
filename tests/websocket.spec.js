@@ -32,6 +32,18 @@ describe('Websocket', () => {
       .on('close', () => done())
   })
 
+  it('should not share ws sessions', async () => {
+    expect.assertions(2)
+    const spy = jest.fn()
+    const ws = new WebSocket(url)
+      .on('message', spy)
+
+    const resp = await callSocket(url, 'not json')
+    expect(spy).not.toHaveBeenCalled()
+    expect(resp).toBeDefined()
+    ws.close()
+  })
+
   it('should respond invalid event when message is not event', async () => {
     const response = await callSocket(url, {})
     expect(response).toStrictEqual({ error: 'invalid event' })
