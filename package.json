@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon src/index.js",
     "start:daemon": "forever start -c \"npm start\" ./ ",
-    "test:watch": "jest --watchAll --ci --maxWorkers=4 --verbose --colors --env=node",
+    "test:watch": "jest --watchAll --ci --maxWorkers=4 --colors --env=node",
     "test": "jest --no-cache --ci --maxWorkers=4 --verbose --colors --env=node",
     "test:ci": "npm-run-all start:daemon test",
     "test:ci:docker": "npm-run-all start:daemon test:watch"

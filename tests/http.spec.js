@@ -1,6 +1,21 @@
 const axios = require("axios").default;
 const contracts = require("../contract");
 
+
+const request = async (url, options) => {
+  let response;
+  try {
+    response = await axios.request(url, options);
+  } catch (error) {
+    if(error.response){
+      response = error.response;
+    } else {
+      throw error;
+    }
+  }
+  return response;
+}
+
 describe("HTTP Server", () => {
   const url = `http://localhost:${process.env.PORT}`;
 
@@ -23,4 +38,34 @@ describe("HTTP Server", () => {
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual([]);
   });
+
+  [
+    ["/",'GET'], 
+    ["/contracts", 'GET'],
+    ["/players", "GET"],
+    ["/auth", "POST"]
+  
+  ].forEach(([path, method]) => {
+
+    const corsHeaders = {
+      "access-control-allow-origin": process.env.fronturl,
+      "access-control-allow-methods": "*",
+      "access-control-allow-headers": "*",
+      "access-control-max-age": "1728000"
+    };
+
+    it(`${method} ${path} should add headers to prevent CORS failure`, async () => {
+      const response = await request(`${url}${path}`, {method});
+      expect(response.headers).toEqual(expect.objectContaining(corsHeaders));
+    });
+
+    it(`get ${path} should add headers to prevent CORS failure`, async () => {
+      const response = await axios.options(`${url}${path}`);
+      expect(response.status).toBe(200);
+      expect(response.headers).toEqual(expect.objectContaining(corsHeaders));
+    });
+
+  });
+
+
 });

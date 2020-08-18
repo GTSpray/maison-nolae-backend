@@ -10,7 +10,12 @@ const callSocket = (url, message) =>
       })
       .on("message", (message) => {
         ws.close();
-        resolve(JSON.parse(message));
+        try {
+          const json = JSON.parse(message);
+          resolve(json)
+        } catch (error) {
+          resolve(message)
+        }
       });
   });
 
