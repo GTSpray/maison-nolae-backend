@@ -9,8 +9,20 @@ jobs:
                 name: Install depndencies
                 command: npm install
             - run:
+                name: Start Server
+                command: npm start
+                environment:
+                - NODE_ENV: production
+                - fronturl: https://localhost:8080
+                - jwt_secret: s3cr3t_of_doom
+                - oauth_discord_client_id: 111111111111111111
+                - oauth_discord_client_secret: QUendeindeidneit-drrfrfrflprlp-T
+                - oauth_discord_id_server_discord: 111111111111111111
+                - oauth_discord_redirect_uri: https://localhost:8080
+                - PORT: 1337
+            - run:
                 name: Test
-                command: npm run test:ci
+                command: npm test
                 environment:
                 - NODE_ENV: production
                 - fronturl: https://localhost:8080
