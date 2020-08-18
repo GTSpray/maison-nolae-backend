@@ -112,7 +112,7 @@ const app = express()
                 discord: pseudo,
                 player: {
                   id: uuidv4(),
-                  pseudo,
+                  pseudo: user.username,
                   x: 0,
                   y: 0
                 },

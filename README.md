@@ -12,7 +12,7 @@ yarn run preset:env
 
 ### Linter
 
-This project use [StandardJS](https://standardjs.com) as linter with a pre-commit hook.
+This project use [StandardJS](https://standardjs.com) as linter with a ci hook.
 
 To configure text editor, see [this link](https://standardjs.com/#are-there-text-editor-plugins).
 
