@@ -29,7 +29,7 @@ module.exports = {
     properties: {
       token: {
         type: "string",
-        pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
+        pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_+/=]+$"
       }
     }
   }

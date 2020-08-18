@@ -137,7 +137,6 @@ describe("API contract", () => {
       });
     });
   });
-
   describe("event", () => {
     const validateEvent = ajv.compile(apiContracts.websocket);
     const contract = apiContracts.websocket.properties;
@@ -198,7 +197,7 @@ describe("API contract", () => {
         ]);
       });
 
-      ["", "_", " ", ". "].forEach((type) => {
+      ["", "_", " ", ". ", "_a"].forEach((type) => {
         it(`when "${type}" is used as type`, () => {
           const valid = validateEvent({
             ...event,
@@ -212,6 +211,57 @@ describe("API contract", () => {
               message: `should match pattern "${contract.type.pattern}"`,
               params: { pattern: contract.type.pattern },
               schemaPath: "#/properties/type/pattern"
+            }
+          ]);
+        });
+      });
+    });
+  });
+
+  describe("authentication", () => {
+    const validateAutentication = ajv.compile(apiContracts.authentication);
+    const contract = apiContracts.authentication.properties;
+
+    const authentication = {
+      type: "authentication",
+      payload: {
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3QifQ.z31gNHNwL1V49dzxob6dUackLpNmGCVE9aV9XhaFq7w"
+      }
+    };
+
+    describe("should be valid", () => {
+      it("when type is string and payload is an object", () => {
+        const valid = validateAutentication(authentication.payload);
+        expect(valid).toBe(true);
+        expect(validateAutentication.errors).toEqual(null);
+      });
+    });
+
+    describe("should be unvalid", () => {
+      const validToken = authentication.payload.token;
+      [
+        "...",
+        "..",
+        ".",
+        validToken.replace(".", ""),
+        ...validToken.split(".").reduce((acc, e) => {
+          acc.push(validToken.replace(e, ""));
+          return acc;
+        }, [])
+      ].forEach((token) => {
+        it(`when "${token}" is used as token`, () => {
+          const valid = validateAutentication({
+            token
+          });
+          expect(valid).toBe(false);
+          expect(validateAutentication.errors).toEqual([
+            {
+              dataPath: ".token",
+              keyword: "pattern",
+              message: `should match pattern "${contract.token.pattern}"`,
+              params: { pattern: contract.token.pattern },
+              schemaPath: "#/properties/token/pattern"
             }
           ]);
         });
