@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid')
 const favicon = require('serve-favicon')
 const path = require('path')
 const fetch = require('node-fetch')
-const { serverLog } = require("./serverLog")
+const { serverLog } = require('./serverLog')
 
 const authService = require('./auth.service')
 
