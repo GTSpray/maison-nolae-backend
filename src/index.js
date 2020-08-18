@@ -155,13 +155,12 @@ const validatePlayer = ajv.compile(apiContracts.player)
 const validateAuthentication = ajv.compile(apiContracts.authentication)
 
 wss.on('connection', (ws) => {
-  let session = null
   ws.on('close', () => {
-    if (session) {
-      session.ws = session.ws.filter((e) => e !== ws)
-      if (session.ws.lengt === 0) {
-        serverLog(`Player quit ${session.player.id}`, 'green', 'WS Server')
-        authenticatedUsers.delete(session.discord)
+    if (ws.session) {
+      ws.session.ws = ws.session.ws.filter((e) => e !== ws)
+      if (ws.session.ws.lengt === 0) {
+        serverLog(`Player quit ${ws.session.player.id}`, 'green', 'WS Server')
+        authenticatedUsers.delete(ws.session.discord)
       }
     }
   })
@@ -189,15 +188,15 @@ wss.on('connection', (ws) => {
       const valid = validateAuthentication(payload)
       if (valid) {
         authService.verify(payload.token, (_err, decoded) => {
-          session = Array.from(authenticatedUsers.values()).find(
+          ws.session = Array.from(authenticatedUsers.values()).find(
             (s) => (s.player.id = decoded.id)
           )
-          if (!session) {
+          if (!ws.session) {
             ws.emit('_error', {
               error: 'Unable to get your session'
             })
           } else {
-            session.ws.push(ws)
+            ws.session.ws.push(ws)
           }
         })
       } else {
@@ -208,15 +207,15 @@ wss.on('connection', (ws) => {
       }
     })
     .on('player', (payload) => {
-      if (session) {
+      if (ws.session) {
         const valid = validatePlayer(payload)
         if (valid) {
-          const id = session.player.id
-          session.player = {
+          const id = ws.session.player.id
+          ws.session.player = {
             ...payload,
             id
           }
-          const ps = JSON.stringify(session.player)
+          const ps = JSON.stringify(ws.session.player)
           authenticatedUsers.forEach((s) => {
             for (const i in s.ws) {
               if (Object.prototype.hasOwnProperty.call(s.ws, i)) {
@@ -225,7 +224,7 @@ wss.on('connection', (ws) => {
             }
           })
         } else {
-          console.error(session.player.id, validatePlayer.errors)
+          console.error(ws.session.player.id, validatePlayer.errors)
         }
       } else {
         ws.send('Not authentified session')
