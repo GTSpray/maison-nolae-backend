@@ -1,5 +1,6 @@
 const axios = require('axios').default
-
+const express = require('express')
+const bodyParser = require('body-parser')
 const contracts = require('../contract')
 
 const request = async (url, options) => {
@@ -61,6 +62,67 @@ describe('HTTP Server', () => {
       const response = await axios.options(`${url}${path}`)
       expect(response.status).toBe(200)
       expect(response.headers).toEqual(expect.objectContaining(corsHeaders))
+    })
+  })
+
+  describe('/auth', () => {
+    const spy = jest.fn()
+    let fakeServer
+    beforeAll((done) => {
+      const oauthServerUrl = new URL(process.env.oauth_discord_base_url)
+      const spyApp = express().use(bodyParser.urlencoded({ extended: true })).use(spy)
+      fakeServer = spyApp.listen(oauthServerUrl.port, done)
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    afterAll((done) => {
+      fakeServer.close(done)
+    })
+
+    describe('should call discord oAuth service', () => {
+      const options = {
+        method: 'POST',
+        data: {
+          code: 12345
+        }
+      }
+
+      it('for getting user token', async () => {
+        const bodySpy = jest.fn()
+        const headerSpy = jest.fn()
+
+        spy.mockImplementation((req, res) => {
+          bodySpy(req.body)
+          headerSpy(req.headers)
+          res.status(401).send()
+        })
+        const response = await request(`${url}/auth`, options)
+        expect(response.status).toBe(401)
+        expect(response.data).toStrictEqual({
+          message: 'discord fail'
+        })
+        expect(spy).toHaveBeenCalled()
+        expect(bodySpy).toHaveBeenCalledWith({
+          client_id: process.env.oauth_discord_client_id,
+          client_secret: process.env.oauth_discord_client_secret,
+          grant_type: 'authorization_code',
+          redirect_uri: process.env.oauth_discord_redirect_uri,
+          code: options.data.code.toString(),
+          scope: 'identify,guilds'
+        })
+        expect(headerSpy).toHaveBeenCalledWith({
+          "accept": "*/*",
+          "accept-encoding": "gzip,deflate",
+          "connection": "close",
+          "content-length": "184",
+          "content-type": "application/x-www-form-urlencoded",
+          "host": "localhost:1664",
+          "user-agent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)",
+        })
+      })
     })
   })
 })

@@ -8,7 +8,7 @@ while (m !== null) {
     regex.lastIndex++
   }
   const [, variable, value] = m
-  newLines.push(`${variable}=${process.env[variable] | value}`)
+  newLines.push(`${variable}=${process.env[variable] || value}`)
   m = regex.exec(envSample)
 }
 try {
