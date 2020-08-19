@@ -4,11 +4,15 @@ jobs:
         docker:
             - image: circleci/node:10
         environment:
-            - NODE_ENV: production
             - jwt_secret: s3cr3t_of_doom
             - PORT: 1337
             - fronturl: https//fronturl.com
         steps:
+            - run:
+                name: versions
+                command: |
+                  node --version
+                  npm --version
             - checkout
             - run:
                 name: Install dependencies
@@ -19,6 +23,8 @@ jobs:
             - run:
                 name: Set env
                 command: npm run preset:env
+                environment:
+                - NODE_ENV: production
             - run:
                 name: Start Server
                 command: npm run start:daemon
