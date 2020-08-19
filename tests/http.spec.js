@@ -114,13 +114,13 @@ describe('HTTP Server', () => {
           scope: 'identify,guilds'
         })
         expect(headerSpy).toHaveBeenCalledWith({
-          "accept": "*/*",
-          "accept-encoding": "gzip,deflate",
-          "connection": "close",
-          "content-length": "184",
-          "content-type": "application/x-www-form-urlencoded",
-          "host": "localhost:1664",
-          "user-agent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)",
+          accept: '*/*',
+          'accept-encoding': 'gzip,deflate',
+          connection: 'close',
+          'content-length': '184',
+          'content-type': 'application/x-www-form-urlencoded',
+          host: 'localhost:1664',
+          'user-agent': 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
         })
       })
     })
