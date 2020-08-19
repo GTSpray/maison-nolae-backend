@@ -12,28 +12,21 @@ jobs:
                 name: Lint
                 command: npm run lint
             - run:
+                name: Set env
+                command: npm run preset:env
+            - run:
                 name: Start Server
                 command: npm run start:daemon
                 environment:
                 - NODE_ENV: production
-                - fronturl: https://localhost:8080
                 - jwt_secret: s3cr3t_of_doom
-                - oauth_discord_client_id: 111111111111111111
-                - oauth_discord_client_secret: QUendeindeidneit-drrfrfrflprlp-T
-                - oauth_discord_id_server_discord: 111111111111111111
-                - oauth_discord_redirect_uri: https://localhost:8080
                 - PORT: 1337
             - run:
                 name: Test
                 command: npm test
                 environment:
                 - NODE_ENV: production
-                - fronturl: https://localhost:8080
                 - jwt_secret: s3cr3t_of_doom
-                - oauth_discord_client_id: 111111111111111111
-                - oauth_discord_client_secret: QUendeindeidneit-drrfrfrflprlp-T
-                - oauth_discord_id_server_discord: 111111111111111111
-                - oauth_discord_redirect_uri: https://localhost:8080
                 - PORT: 1337
 workflows:
     version: 2
