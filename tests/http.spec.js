@@ -2,6 +2,7 @@ const axios = require('axios').default
 const express = require('express')
 const bodyParser = require('body-parser')
 const contracts = require('../contract')
+const { player } = require('../contract')
 
 const request = async (url, options) => {
   let response
@@ -16,6 +17,30 @@ const request = async (url, options) => {
   }
   return response
 }
+
+const server = (fakeUrl) => new Promise((resolve) => {
+  const url = new URL(fakeUrl)
+  const spies = {
+    headers: jest.fn(),
+    body: jest.fn(),
+    response: jest.fn()
+  }
+  const fakeApp = express()
+    .use(bodyParser.urlencoded({ extended: true }))
+    .use((req, res) => {
+      spies.headers(req.headers)
+      spies.body(req.body)
+      spies.response(req, res)
+    })
+
+  const server = fakeApp.listen(url.port, () => {
+    resolve({
+      url,
+      spies,
+      server
+    })
+  })
+})
 
 describe('HTTP Server', () => {
   const url = `http://localhost:${process.env.PORT}`
@@ -66,12 +91,9 @@ describe('HTTP Server', () => {
   })
 
   describe('/auth', () => {
-    const spy = jest.fn()
     let fakeServer
-    beforeAll((done) => {
-      const oauthServerUrl = new URL(process.env.oauth_discord_base_url)
-      const spyApp = express().use(bodyParser.urlencoded({ extended: true })).use(spy)
-      fakeServer = spyApp.listen(oauthServerUrl.port, done)
+    beforeAll(async () => {
+      fakeServer = await server(process.env.oauth_discord_base_url)
     })
 
     afterEach(() => {
@@ -79,7 +101,7 @@ describe('HTTP Server', () => {
     })
 
     afterAll((done) => {
-      fakeServer.close(done)
+      fakeServer.server.close(done)
     })
 
     describe('should call discord oAuth service', () => {
@@ -90,22 +112,17 @@ describe('HTTP Server', () => {
         }
       }
 
-      it('for getting user token', async () => {
-        const bodySpy = jest.fn()
-        const headerSpy = jest.fn()
+      it('for getting user token respond 401 discord authent fail', async () => {
+        fakeServer.spies.response.mockImplementation((_req, res) => res.status(401).send())
 
-        spy.mockImplementation((req, res) => {
-          bodySpy(req.body)
-          headerSpy(req.headers)
-          res.status(401).send()
-        })
         const response = await request(`${url}/auth`, options)
         expect(response.status).toBe(401)
         expect(response.data).toStrictEqual({
           message: 'discord fail'
         })
-        expect(spy).toHaveBeenCalled()
-        expect(bodySpy).toHaveBeenCalledWith({
+
+        expect(fakeServer.spies.response).toHaveBeenCalled()
+        expect(fakeServer.spies.body).toHaveBeenCalledWith({
           client_id: process.env.oauth_discord_client_id,
           client_secret: process.env.oauth_discord_client_secret,
           grant_type: 'authorization_code',
@@ -113,15 +130,41 @@ describe('HTTP Server', () => {
           code: options.data.code.toString(),
           scope: 'identify,guilds'
         })
-        expect(headerSpy).toHaveBeenCalledWith({
+        expect(fakeServer.spies.headers).toHaveBeenCalledWith({
           accept: '*/*',
           'accept-encoding': 'gzip,deflate',
           connection: 'close',
           'content-length': '184',
           'content-type': 'application/x-www-form-urlencoded',
-          host: 'localhost:1664',
+          host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
           'user-agent': 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
         })
+      })
+
+      it('and return user jwt when all step are done', async () => {
+        fakeServer.spies.response.mockImplementationOnce((_req, res) => {
+          res.status(200).send({
+            access_token: '6qrZcUqja7812RVdnEKjpzOL4CvHBFG',
+            token_type: 'Bearer',
+            expires_in: 604800,
+            refresh_token: 'D43f5y0ahjqew82jZ4NViEr2YafMKhue',
+            scope: 'identify,guilds'
+          })
+        })
+          .mockImplementationOnce((_req, res) => res.status(200).send({
+            username: 'Johnny Noxville',
+            discriminator: '12345'
+          }))
+          .mockImplementationOnce((_req, res) => res.status(200).send(
+            [
+              { id: process.env.oauth_discord_id_server_discord }
+            ]
+          ))
+
+        const response = await request(`${url}/auth`, options)
+        expect(response.status).toBe(200)
+        expect(response.data).toHaveProperty('player')
+        expect(response.data).toHaveProperty('token')
       })
     })
   })

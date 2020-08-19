@@ -7,6 +7,7 @@ jobs:
             - jwt_secret: s3cr3t_of_doom
             - PORT: 1337
             - fronturl: https//fronturl.com
+            - oauth_discord_base_url: http://localhost:1664
         steps:
             - run:
                 name: versions
