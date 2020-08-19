@@ -2,8 +2,6 @@ const axios = require('axios').default
 const express = require('express')
 const bodyParser = require('body-parser')
 const contracts = require('../contract')
-const { player } = require('../contract')
-
 const request = async (url, options) => {
   let response
   try {
