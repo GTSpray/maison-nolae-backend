@@ -5,7 +5,7 @@
   "license": "Beerware",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js",
+    "start": "nodemon src/index.js ",
     "start:daemon": "forever start -c \"npm start\" ./ ",
     "test": "jest --no-cache --ci --maxWorkers=4 --verbose --colors --env=node",
     "test:watch": "jest --watchAll --ci --maxWorkers=4 --colors --env=node",
@@ -39,6 +39,9 @@
     "standard": "^14.3.4"
   },
   "keywords": [],
+  "jest": {
+    "setupFiles": ["dotenv/config"]
+  },
   "standard": {
     "globals": ["describe", "it", "after", "afterEach", "before", "beforeEach"],
     "env": ["node", "jest"]
