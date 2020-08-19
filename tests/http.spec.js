@@ -1,4 +1,5 @@
 const axios = require('axios').default
+
 const contracts = require('../contract')
 
 const request = async (url, options) => {
@@ -43,7 +44,6 @@ describe('HTTP Server', () => {
     ['/contracts', 'GET'],
     ['/players', 'GET'],
     ['/auth', 'POST']
-
   ].forEach(([path, method]) => {
     const corsHeaders = {
       'access-control-allow-origin': process.env.fronturl,

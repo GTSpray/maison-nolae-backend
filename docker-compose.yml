@@ -6,7 +6,3 @@ services:
         volumes:
         - ./:/home/node/app
         command: "npm run test:ci:docker"
-        env_file:
-        - ./.env
-        ports:
-        - ${PORT}:${PORT}
