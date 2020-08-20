@@ -30,6 +30,7 @@ const app = express()
     res.header('Access-Control-Allow-Methods', '*')
     res.header('Access-Control-Allow-Headers', '*')
     res.header('Access-Control-Max-Age', '1728000')
+
     next()
   })
   .get('/', (_req, res) => {
@@ -66,10 +67,7 @@ const app = express()
       })
         .then((discordRes) => discordRes.json())
         .then((info) =>
-          [
-            '@me',
-            '@me/guilds'
-          ].map((path) => ({
+          ['@me', '@me/guilds'].map((path) => ({
             url: `${process.env.oauth_discord_base_url}/users/${path}`,
             opts: {
               headers: {
@@ -113,8 +111,8 @@ const app = express()
               })
             })
           } else {
-            res.status(401).json({
-              message: 'error'
+            res.status(403).json({
+              message: 'forbidden'
             })
           }
         })
