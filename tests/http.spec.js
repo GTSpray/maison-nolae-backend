@@ -59,7 +59,7 @@ describe('HTTP Server', () => {
   const url = `http://localhost:${process.env.PORT}`
 
   it('get / should return hello world', async () => {
-    const response = await axios.get(url)
+    const response = await request(url)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual({
       message: 'Hello Wrold!'
@@ -67,13 +67,13 @@ describe('HTTP Server', () => {
   })
 
   it('get /contracts should return list of contracts', async () => {
-    const response = await axios.get(`${url}/contracts`)
+    const response = await request(`${url}/contracts`)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual(contracts)
   })
 
   it('get /player should return list of players', async () => {
-    const response = await axios.get(`${url}/players`)
+    const response = await request(`${url}/players`)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual([])
   });
@@ -105,6 +105,7 @@ describe('HTTP Server', () => {
 
   describe('/auth', () => {
     let fakeServer
+
     beforeAll(async () => {
       fakeServer = await server(process.env.oauth_discord_base_url)
     })
