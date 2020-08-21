@@ -1,4 +1,5 @@
 const fs = require('fs')
+
 const envSample = fs.readFileSync('.env.sample', { encoding: 'utf8' })
 const newLines = []
 const regex = /^([a-z_]+)=(.*)$/gim

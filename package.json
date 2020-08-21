@@ -10,8 +10,8 @@
     "test": "jest --no-cache --ci --maxWorkers=4 --verbose --colors --env=node",
     "test:watch": "jest --watchAll --ci --maxWorkers=4 --colors --env=node",
     "test:ci:docker": "npm-run-all start:daemon test:watch",
-    "lint": "standard",
-    "lint:fix": "standard --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preset:env": "node set_env.js"
   },
   "engines": {
@@ -33,11 +33,20 @@
   },
   "devDependencies": {
     "axios": "^0.19.2",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^23.20.0",
+    "eslint-plugin-prettier": "^3.0.0",
     "forever": "^3.0.0",
     "jest": "26.2.2",
     "jose": "^1.28.0",
     "nodemon": "1.18.4",
     "npm-run-all": "^4.1.5",
+    "prettier": "^1.15.3",
+    "prettier-eslint": "^8.8.2",
     "standard": "^14.3.4"
   },
   "keywords": [],
