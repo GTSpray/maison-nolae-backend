@@ -1,12 +1,45 @@
-on: [push, pull_request]
 name: Lint
+
+on:
+  push:
+    branches:
+      - master
+      -
+  pull_request:
+
 jobs:
-  standardjs:
-    name: StandardJs
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@master
-    - name: StandardJs
-      uses: docker://jopereyral/standardjs-action
-      with:
-        args: --fix
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run linters
+        uses: samuelmeuli/lint-action@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          eslint: true
+          prettier: true
+      
