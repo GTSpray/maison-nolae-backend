@@ -1,40 +1,52 @@
-name: Lint
-
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-
-jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Set up cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Lint
-        run: |
-          yarn lint:fix
+---
+    ###########################
+    ###########################
+    ## Linter GitHub Actions ##
+    ###########################
+    ###########################
+    name: Lint Code Base
+    
+    #
+    # Documentation:
+    # https://help.github.com/en/articles/workflow-syntax-for-github-actions
+    #
+    
+    #############################
+    # Start the job on all push #
+    #############################
+    on:
+      push:
+        branches-ignore: [master]
+        # Remove the line above to run when pushing to master
+      pull_request:
+        branches: [master,develop]
+    
+    ###############
+    # Set the Job #
+    ###############
+    jobs:
+      build:
+        # Name the Job
+        name: Lint Code Base
+        # Set the agent to run on
+        runs-on: ubuntu-latest
+    
+        ##################
+        # Load all steps #
+        ##################
+        steps:
+          ##########################
+          # Checkout the code base #
+          ##########################
+          - name: Checkout Code
+            uses: actions/checkout@v2
+    
+          ################################
+          # Run Linter against code base #
+          ################################
+          - name: Lint Code Base
+            uses: github/super-linter@v3
+            env:
+              VALIDATE_JAVASCRIPT_STANDARD: false
+              DEFAULT_BRANCH: develop
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
