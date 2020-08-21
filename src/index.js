@@ -1,14 +1,6 @@
-/* eslint-disable import/first */
-
 require('dotenv').config()
 
-import { cors } from './middleware/header.middleware'
-import { error as errorMiddleware } from './middleware/error.middleware'
-
-import { authService } from './service/auth.service'
-import { serverLog } from './serverLog'
-import { contracts } from './controller/contracts.controller'
-import { hello } from './controller/hello.controller'
+const { cors } = require('./middleware/header.middleware');
 
 
 const express = require('express')
@@ -36,7 +28,7 @@ const app = express()
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
   .use(cors)
-  .use(errorMiddleware)
+  .use(error)
   .get('/', hello)
   .get('/contracts', contracts)
   .get('/players', (_req, res) => {
@@ -65,8 +57,8 @@ const app = express()
       })
         .then((discordRes) => discordRes.json())
         .then((info) =>
-          ['@me', '@me/guilds'].map((uri) => ({
-            url: `${process.env.oauth_discord_base_url}/users/${uri}`,
+          ['@me', '@me/guilds'].map((path) => ({
+            url: `${process.env.oauth_discord_base_url}/users/${path}`,
             opts: {
               headers: {
                 authorization: `${info.token_type} ${info.access_token}`
@@ -132,6 +124,11 @@ const app = express()
 
 const { Server } = require('ws')
 const apiContracts = require('./contract.js')
+const authService = require('./service/auth.service')
+const { serverLog } = require('./serverLog')
+const { contracts } = require('./controller/contracts.controller')
+const { error } = require('./middleware/error.middleware');
+const { hello } = require('./controller/hello.controller')
 
 const wss = new Server({ server: app })
 const validateWebsocket = ajv.compile(apiContracts.websocket)
@@ -193,16 +190,18 @@ wss.on('connection', (ws) => {
       if (session) {
         const valid = validatePlayer(payload)
         if (valid) {
-          const { id } = session.player
+          const {id} = session.player
           session.player = {
             ...payload,
             id
           }
           const ps = JSON.stringify(session.player)
           authenticatedUsers.forEach((s) => {
-            s.ws.forEach(wsi => {
-              wsi.send(ps)
-            })
+            for (const i in s.ws) {
+              if (Object.prototype.hasOwnProperty.call(s.ws, i)) {
+                s.ws[i].send(ps)
+              }
+            }
           })
         } else {
           console.error(session.player.id, validatePlayer.errors)
