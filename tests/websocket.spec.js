@@ -1,4 +1,7 @@
-const { socketResponse, wsClient } = require('./helpers/websocket.helper')
+const { 
+  socketResponse,
+  wsClient 
+} = require('./helpers/websocket.helper')
 
 describe('Websocket', () => {
   const url = `ws://localhost:${process.env.PORT}`

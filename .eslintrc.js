@@ -2,7 +2,7 @@ module.exports = {
     root: true,
     env: {
       node: true,
-      "jest/globals": true
+      'jest/globals': true
     },
     globals: {
       expect: true
@@ -10,7 +10,7 @@ module.exports = {
     extends: [
       'airbnb-base',
       'prettier',
-      "plugin:jest/recommended"
+      'plugin:jest/recommended'
     ],
     plugins: ['prettier', 'jest'],
     parserOptions: {
@@ -18,15 +18,8 @@ module.exports = {
       parser: 'babel-eslint'
     },
     rules: {
-      'vue/max-attributes-per-line': [
-        'error',
-        {
-          singleline: 4,
-          multiline: {
-            max: 1,
-            allowFirstLine: true
-          }
-        }
-      ]
+      'vue/max-attributes-per-line': 'off',
+      'jest/no-test-callback': 'off',
+      'quotes': [2, 'single', 'avoid-escape']
     }
   }

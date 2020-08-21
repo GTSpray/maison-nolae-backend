@@ -10,13 +10,13 @@ module.exports.socketResponse = (url, message) =>
           typeof message === 'string' ? message : JSON.stringify(message)
         )
       })
-      .on('message', (message) => {
+      .on('message', (msg) => {
         ws.close()
         try {
-          const json = JSON.parse(message)
+          const json = JSON.parse(msg)
           resolve(json)
         } catch (error) {
-          resolve(message)
+          resolve(msg)
         }
       })
   })

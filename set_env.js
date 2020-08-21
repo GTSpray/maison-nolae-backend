@@ -6,7 +6,7 @@ const regex = /^([a-z_]+)=(.*)$/gim
 let m = regex.exec(envSample)
 while (m !== null) {
   if (m.index === regex.lastIndex) {
-    regex.lastIndex++
+    regex.lastIndex+=1
   }
   const [, variable, value] = m
   newLines.push(`${variable}=${process.env[variable] || value}`)

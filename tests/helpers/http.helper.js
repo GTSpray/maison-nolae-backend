@@ -3,17 +3,17 @@ const bodyParser = require('body-parser')
 const axios = require('axios').default
 
 module.exports.request = async (url, options) => {
-  let response
+  let r
   try {
-    response = await axios.request(url, options)
+    r = await axios.request(url, options)
   } catch (error) {
     if (error.response) {
-      response = error.response
+      r = error
     } else {
       throw error
     }
   }
-  return response
+  return r
 }
 
 module.exports.server = (fakeUrl) =>
@@ -38,7 +38,7 @@ module.exports.server = (fakeUrl) =>
 
     const server = fakeApp.listen(url.port, () => {
       resolve({
-        destroy: () => new Promise((resolve) => server.close(resolve)),
+        destroy: () => new Promise((r) => server.close(r)),
         url,
         response,
         request
