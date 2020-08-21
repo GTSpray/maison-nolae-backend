@@ -1,7 +1,7 @@
 require('dotenv').config()
 
-const { cors } = require('./middleware/header.middleware')
-const { error } = require('./middleware/error.middleware')
+const { cors } = require('./middleware/header.middleware');
+const { error } = require('./middleware/error.middleware');
 
 const { hello } = require('./controller/hello.controller')
 const { contracts } = require('./controller/contracts.controller')
