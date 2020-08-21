@@ -1,4 +1,4 @@
-const contracts = require('../contract')
+const contracts = require('../src/contract')
 const { server, request } = require('./helpers/http.helper')
 const { randomStringNumber } = require('./helpers/random.helper')
 
