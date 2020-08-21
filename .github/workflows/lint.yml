@@ -1,12 +1,33 @@
-on: [push, pull_request]
-name: Main
+name: Lint Code Base
+
+#
+# Documentation:
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+#
+
+#############################
+# Start the job on all push #
+#############################
+on:
+    push:
+    branches-ignore: [master]
+    # Remove the line above to run when pushing to master
+    pull_request:
+    branches: [master]
+
 jobs:
-  standardjs:
-    name: StandardJs
+    build:
+    name: Lint Code Base
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@master
-    - name: StandardJs
-      uses: docker://jopereyral/standardjs-action
-      with:
-        args: --fix
+        ##########################
+        - name: Checkout Code
+        uses: actions/checkout@v2
+
+        - name: Lint Code Base
+        uses: github/super-linter@v3
+        env:
+            VALIDATE_JAVASCRIPT_STANDARD: false
+            DEFAULT_BRANCH: develop
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
