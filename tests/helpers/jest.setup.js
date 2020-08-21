@@ -13,21 +13,25 @@ expect.extend({
   toMismatchApiContract (body, schema, expectedErrors) {
     const ajv = new Ajv()
     const validate = ajv.compile(schema)
-    return {
-      message: () =>
-        validate(body)
-          ? `expected ${JSON.stringify(
-              body,
-              null,
-              2
-            )} do not match with contract`
-          : `expected ${JSON.stringify(
-              validate.errors,
-              null,
-              2
-            )} to be ${JSON.stringify(expectedErrors, null, 2)}`,
 
-      pass: this.equals(validate.errors, expectedErrors)
+    let msg = ''
+    if (validate(body)) {
+      msg = `expected ${JSON.stringify(
+        body,
+        null,
+        2
+      )} do not match with contract`
+    } else if (!this.equals(validate.errors, expectedErrors)) {
+      msg = `expected ${JSON.stringify(
+        validate.errors,
+        null,
+        2
+      )} to be ${JSON.stringify(expectedErrors, null, 2)}`
+    }
+
+    return {
+      message: () => msg,
+      pass: msg === ''
     }
   },
   toMatchJWT (token, expectedPayload) {

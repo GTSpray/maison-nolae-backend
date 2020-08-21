@@ -1,10 +1,7 @@
-const Ajv = require('ajv')
 const apiContracts = require('../contract.js')
 
-const ajv = Ajv({ allErrors: true })
 describe('API contract', () => {
   describe('player', () => {
-    const validatePlayer = ajv.compile(apiContracts.player)
     const contract = apiContracts.player.properties
 
     const player = {
@@ -17,18 +14,18 @@ describe('API contract', () => {
     describe('should be unvalid', () => {
       ['', 'f', 'fail&', ' fail', 'fail '].forEach((pseudo) => {
         it(`when "${pseudo}" is used as pseudo`, () => {
-          const valid = validatePlayer({
+          const badPlayer = {
             ...player,
             pseudo
-          })
-          expect(valid).toBe(false)
-          expect(validatePlayer.errors).toEqual([
+          }
+
+          expect(badPlayer).toMismatchApiContract(apiContracts.player, [
             {
-              dataPath: '.pseudo',
               keyword: 'pattern',
-              message: `should match pattern "${contract.pseudo.pattern}"`,
+              dataPath: '.pseudo',
+              schemaPath: '#/properties/pseudo/pattern',
               params: { pattern: contract.pseudo.pattern },
-              schemaPath: '#/properties/pseudo/pattern'
+              message: `should match pattern "${contract.pseudo.pattern}"`
             }
           ])
         })
@@ -43,12 +40,11 @@ describe('API contract', () => {
         'x56a4180-h5aa-42ec-a945-5fd21dec0538' // (non-hex characters)
       ].forEach((id) => {
         it(`when "${id}" is used as id`, () => {
-          const valid = validatePlayer({
+          const badPlayer = {
             ...player,
             id
-          })
-          expect(valid).toBe(false)
-          expect(validatePlayer.errors).toEqual([
+          }
+          expect(badPlayer).toMismatchApiContract(apiContracts.player, [
             {
               dataPath: '.id',
               keyword: 'format',
@@ -62,25 +58,37 @@ describe('API contract', () => {
 
       [-1, 1479, 0.5, '', '1', 'f'].forEach((x) => {
         it(`when "${x}" is used as x`, () => {
-          const valid = validatePlayer({
+          const badPlayer = {
             ...player,
             x
-          })
-          expect(valid).toBe(false)
-          expect(validatePlayer.errors.length).toBe(1)
-          expect(validatePlayer.errors[0].dataPath).toBe('.x')
+          }
+          expect(badPlayer).toMismatchApiContract(apiContracts.player, [
+            {
+              dataPath: '.x',
+              keyword: expect.anything(),
+              message: expect.anything(),
+              params: expect.anything(),
+              schemaPath: expect.anything()
+            }
+          ])
         })
       });
 
       [-1, 713, 0.5, '', '1', 'f'].forEach((y) => {
         it(`when "${y}" is used as y`, () => {
-          const valid = validatePlayer({
+          const badPlayer = {
             ...player,
             y
-          })
-          expect(valid).toBe(false)
-          expect(validatePlayer.errors.length).toBe(1)
-          expect(validatePlayer.errors[0].dataPath).toBe('.y')
+          }
+          expect(badPlayer).toMismatchApiContract(apiContracts.player, [
+            {
+              dataPath: '.y',
+              keyword: expect.anything(),
+              message: expect.anything(),
+              params: expect.anything(),
+              schemaPath: expect.anything()
+            }
+          ])
         })
       })
     })
@@ -92,53 +100,51 @@ describe('API contract', () => {
         }
         delete p.id
 
-        const valid = validatePlayer(p)
-        expect(valid).toBe(true)
+        expect(p).toMatchApiContract(apiContracts.player)
       });
 
       ['pass', 'pass1', 'pass pass', 'pa'].forEach((pseudo) => {
         it(`when "${pseudo}" is used as pseudo`, () => {
-          const valid = validatePlayer({
+          const p = {
             ...player,
             pseudo
-          })
-          expect(valid).toBe(true)
+          }
+          expect(p).toMatchApiContract(apiContracts.player)
         })
       });
 
       [0, 1, 1478].forEach((x) => {
         it(`when "${x}" is used as x`, () => {
-          const valid = validatePlayer({
+          const p = {
             ...player,
             x
-          })
-          expect(valid).toBe(true)
+          }
+          expect(p).toMatchApiContract(apiContracts.player)
         })
       });
 
       [0, 1, 712].forEach((x) => {
         it(`when "${x}" is used as x`, () => {
-          const valid = validatePlayer({
+          const p = {
             ...player,
             x
-          })
-          expect(valid).toBe(true)
+          }
+          expect(p).toMatchApiContract(apiContracts.player)
         })
       });
 
       ['181ebd01-d0b7-4497-bac4-d59959e3e08b'].forEach((id) => {
         it(`when "${id}" is used as id`, () => {
-          const valid = validatePlayer({
+          const p = {
             ...player,
             id
-          })
-          expect(valid).toBe(true)
+          }
+          expect(p).toMatchApiContract(apiContracts.player)
         })
       })
     })
   })
   describe('event', () => {
-    const validateEvent = ajv.compile(apiContracts.websocket)
     const contract = apiContracts.websocket.properties
 
     const event = {
@@ -150,21 +156,18 @@ describe('API contract', () => {
 
     describe('should be valid', () => {
       it('when type is string and payload is an object', () => {
-        const valid = validateEvent(event)
-        expect(valid).toBe(true)
-        expect(validateEvent.errors).toEqual(null)
+        expect(event).toMatchApiContract(apiContracts.websocket)
       })
     })
 
     describe('should be invalid', () => {
       [1, {}, null].forEach((type) => {
         it(`when "${type}" is used as type`, () => {
-          const valid = validateEvent({
+          const badEvent = {
             ...event,
             type
-          })
-          expect(valid).toBe(false)
-          expect(validateEvent.errors).toEqual([
+          }
+          expect(badEvent).toMismatchApiContract(apiContracts.websocket, [
             {
               dataPath: '.type',
               keyword: 'type',
@@ -179,12 +182,11 @@ describe('API contract', () => {
       })
 
       it('when undefined is used as type', () => {
-        const valid = validateEvent({
+        const badEvent = {
           ...event,
           type: undefined
-        })
-        expect(valid).toBe(false)
-        expect(validateEvent.errors).toEqual([
+        }
+        expect(badEvent).toMismatchApiContract(apiContracts.websocket, [
           {
             dataPath: '',
             keyword: 'required',
@@ -199,12 +201,11 @@ describe('API contract', () => {
 
       ['', '_', ' ', '. ', '_a'].forEach((type) => {
         it(`when "${type}" is used as type`, () => {
-          const valid = validateEvent({
+          const badEvent = {
             ...event,
             type
-          })
-          expect(valid).toBe(false)
-          expect(validateEvent.errors).toEqual([
+          }
+          expect(badEvent).toMismatchApiContract(apiContracts.websocket, [
             {
               dataPath: '.type',
               keyword: 'pattern',
@@ -219,7 +220,6 @@ describe('API contract', () => {
   })
 
   describe('authentication', () => {
-    const validateAutentication = ajv.compile(apiContracts.authentication)
     const contract = apiContracts.authentication.properties
 
     const authentication = {
@@ -232,9 +232,7 @@ describe('API contract', () => {
 
     describe('should be valid', () => {
       it('when type is string and payload is an object', () => {
-        const valid = validateAutentication(authentication.payload)
-        expect(valid).toBe(true)
-        expect(validateAutentication.errors).toEqual(null)
+        expect(authentication.payload).toMatchApiContract(apiContracts.authentication)
       })
     })
 
@@ -251,11 +249,7 @@ describe('API contract', () => {
         }, [])
       ].forEach((token) => {
         it(`when "${token}" is used as token`, () => {
-          const valid = validateAutentication({
-            token
-          })
-          expect(valid).toBe(false)
-          expect(validateAutentication.errors).toEqual([
+          expect({ token }).toMismatchApiContract(apiContracts.authentication, [
             {
               dataPath: '.token',
               keyword: 'pattern',
