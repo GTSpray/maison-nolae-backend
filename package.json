@@ -23,7 +23,6 @@
     "chalk": "4.1.0",
     "dotenv": "^8.2.0",
     "express": "4.17.1",
-    "helmet": "^4.1.0",
     "jsonwebtoken": "8.5.1",
     "node-fetch": "2.6.0",
     "nodemon": "2.0.4",
@@ -43,25 +42,11 @@
   "keywords": [],
   "jest": {
     "resetMocks": true,
-    "setupFilesAfterEnv": [
-      "<rootDir>/tests/helpers/jest.setup.js"
-    ],
-    "setupFiles": [
-      "dotenv/config"
-    ]
+    "setupFilesAfterEnv": ["<rootDir>/tests/helpers/jest.setup.js"],
+    "setupFiles": ["dotenv/config"]
   },
   "standard": {
-    "globals": [
-      "describe",
-      "it",
-      "after",
-      "afterEach",
-      "before",
-      "beforeEach"
-    ],
-    "env": [
-      "node",
-      "jest"
-    ]
+    "globals": ["describe", "it", "after", "afterEach", "before", "beforeEach"],
+    "env": ["node", "jest"]
   }
 }

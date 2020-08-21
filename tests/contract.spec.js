@@ -1,4 +1,4 @@
-const apiContracts = require('../src/contract.js')
+const apiContracts = require('../contract.js')
 
 describe('API contract', () => {
   describe('player', () => {

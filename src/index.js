@@ -1,24 +1,18 @@
 require('dotenv').config()
 
-const { cors } = require('./middleware/header.middleware')
-const { error } = require('./middleware/error.middleware')
-
-const { hello } = require('./controller/hello.controller')
-const { contracts } = require('./controller/contracts.controller')
-
 const express = require('express')
 const bodyParser = require('body-parser')
-const helmet = require('helmet')
-
 const { v4: uuidv4 } = require('uuid')
 const favicon = require('serve-favicon')
 const path = require('path')
 const fetch = require('node-fetch')
 const { serverLog } = require('./serverLog')
 
-const authService = require('./service/auth.service')
+const authService = require('./auth.service')
 
-const apiContracts = require('./contract.js')
+const apiContracts = require('../contract.js')
+
+const config = require('../.config/endpoint.js')
 
 const Ajv = require('ajv')
 const ajv = Ajv({ allErrors: true })
@@ -28,14 +22,25 @@ const authenticatedUsers = new Map()
 const port = process.env.PORT || 8080
 const app = express()
   .set('port', port)
-  .use(helmet())
   .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
-  .use(cors)
-  .use(error)
-  .get('/', hello)
-  .get('/contracts', contracts)
+  .use((_req, res, next) => {
+    res.header('Access-Control-Allow-Origin', config.fronturl)
+    res.header('Access-Control-Allow-Methods', '*')
+    res.header('Access-Control-Allow-Headers', '*')
+    res.header('Access-Control-Max-Age', '1728000')
+
+    next()
+  })
+  .get('/', (_req, res) => {
+    res.json({
+      message: 'Hello Wrold!'
+    })
+  })
+  .get('/contracts', (_req, res) => {
+    res.json(apiContracts)
+  })
   .get('/players', (_req, res) => {
     const players = Array.from(authenticatedUsers.values()).map(
       (e) => e.player
