@@ -15,7 +15,7 @@
     "preset:env": "node set_env.js"
   },
   "engines": {
-    "node": "10.21.0"
+    "node": ">=10.20.0 <11.0.0"
   },
   "dependencies": {
     "ajv": "6.12.3",
