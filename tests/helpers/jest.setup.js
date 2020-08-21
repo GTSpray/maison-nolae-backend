@@ -1,18 +1,18 @@
-const jose = require("jose");
-const Ajv = require("ajv");
+const jose = require('jose')
+const Ajv = require('ajv')
 expect.extend({
-  toMatchApiContract(body, schema) {
-    const ajv = new Ajv();
-    const validate = ajv.compile(schema);
-    const pass = !!validate(body);
+  toMatchApiContract (body, schema) {
+    const ajv = new Ajv()
+    const validate = ajv.compile(schema)
+    const pass = !!validate(body)
     return {
-      message: () => (pass ? "" : JSON.stringify(validate.errors[0], null, 2)),
+      message: () => (pass ? '' : JSON.stringify(validate.errors[0], null, 2)),
       pass
-    };
+    }
   },
-  toMismatchApiContract(body, schema, expectedErrors) {
-    const ajv = new Ajv();
-    const validate = ajv.compile(schema);
+  toMismatchApiContract (body, schema, expectedErrors) {
+    const ajv = new Ajv()
+    const validate = ajv.compile(schema)
     return {
       message: () =>
         validate(body)
@@ -28,10 +28,10 @@ expect.extend({
             )} to be ${JSON.stringify(expectedErrors, null, 2)}`,
 
       pass: this.equals(validate.errors, expectedErrors)
-    };
+    }
   },
-  toMatchJWT(token, expectedPayload) {
-    const payload = jose.JWT.decode(token);
+  toMatchJWT (token, expectedPayload) {
+    const payload = jose.JWT.decode(token)
     return {
       message: () =>
         `expected ${JSON.stringify(
@@ -40,6 +40,6 @@ expect.extend({
           2
         )} JWT token contain ${JSON.stringify(expectedPayload, null, 2)}`,
       pass: this.equals(payload, expect.objectContaining(expectedPayload))
-    };
+    }
   }
-});
+})

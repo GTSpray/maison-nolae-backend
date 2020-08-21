@@ -1,26 +1,26 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const axios = require("axios").default;
+const express = require('express')
+const bodyParser = require('body-parser')
+const axios = require('axios').default
 
 module.exports.request = async (url, options) => {
-  let response;
+  let response
   try {
-    response = await axios.request(url, options);
+    response = await axios.request(url, options)
   } catch (error) {
     if (error.response) {
-      response = error.response;
+      response = error.response
     } else {
-      throw error;
+      throw error
     }
   }
-  return response;
-};
+  return response
+}
 
 module.exports.server = (fakeUrl) =>
   new Promise((resolve) => {
-    const url = new URL(fakeUrl);
-    const response = jest.fn(),
-      request = jest.fn();
+    const url = new URL(fakeUrl)
+    const response = jest.fn()
+    const request = jest.fn()
 
     const fakeApp = express()
       .use(bodyParser.urlencoded({ extended: true }))
@@ -31,10 +31,10 @@ module.exports.server = (fakeUrl) =>
           headers,
           body,
           query
-        }))(req);
-        request(bleh);
-        response(req, res);
-      });
+        }))(req)
+        request(bleh)
+        response(req, res)
+      })
 
     const server = fakeApp.listen(url.port, () => {
       resolve({
@@ -42,6 +42,6 @@ module.exports.server = (fakeUrl) =>
         url,
         response,
         request
-      });
-    });
-  });
+      })
+    })
+  })
