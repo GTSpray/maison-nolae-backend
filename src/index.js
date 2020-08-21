@@ -1,16 +1,24 @@
+require('dotenv').config()
+
+const { cors } = require('./middleware/header.middleware')
+const { error } = require('./middleware/error.middleware')
+
+const { hello } = require('./controller/hello.controller')
+const { contracts } = require('./controller/contracts.controller')
+
 const express = require('express')
 const bodyParser = require('body-parser')
+const helmet = require('helmet')
+
 const { v4: uuidv4 } = require('uuid')
 const favicon = require('serve-favicon')
 const path = require('path')
 const fetch = require('node-fetch')
 const { serverLog } = require('./serverLog')
 
-const authService = require('./auth.service')
+const authService = require('./service/auth.service')
 
-const apiContracts = require('../contract.js')
-
-const config = require('../.config/endpoint.js')
+const apiContracts = require('./contract.js')
 
 const Ajv = require('ajv')
 const ajv = Ajv({ allErrors: true })
@@ -20,24 +28,14 @@ const authenticatedUsers = new Map()
 const port = process.env.PORT || 8080
 const app = express()
   .set('port', port)
+  .use(helmet())
   .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
-  .use((_req, res, next) => {
-    res.header('Access-Control-Allow-Origin', config.fronturl)
-    res.header('Access-Control-Allow-Methods', '*')
-    res.header('Access-Control-Allow-Headers', '*')
-    res.header('Access-Control-Max-Age', '1728000')
-    next()
-  })
-  .get('/', (_req, res) => {
-    res.json({
-      message: 'Hello Wrold!'
-    })
-  })
-  .get('/contracts', (_req, res) => {
-    res.json(apiContracts)
-  })
+  .use(cors)
+  .use(error)
+  .get('/', hello)
+  .get('/contracts', contracts)
   .get('/players', (_req, res) => {
     const players = Array.from(authenticatedUsers.values()).map(
       (e) => e.player
@@ -55,7 +53,7 @@ const app = express()
         scope: 'identify,guilds'
       }
 
-      fetch('https://discordapp.com/api/oauth2/token', {
+      fetch(`${process.env.oauth_discord_base_url}/oauth2/token`, {
         method: 'POST',
         body: new URLSearchParams(data),
         headers: {
@@ -64,11 +62,8 @@ const app = express()
       })
         .then((discordRes) => discordRes.json())
         .then((info) =>
-          [
-            'https://discordapp.com/api/users/@me',
-            'https://discordapp.com/api/users/@me/guilds'
-          ].map((url) => ({
-            url,
+          ['@me', '@me/guilds'].map((path) => ({
+            url: `${process.env.oauth_discord_base_url}/users/${path}`,
             opts: {
               headers: {
                 authorization: `${info.token_type} ${info.access_token}`
@@ -79,15 +74,15 @@ const app = express()
         .then((qs) => Promise.all(qs.map((q) => fetch(q.url, q.opts))))
         .then((resp) => Promise.all(resp.map((r) => r.json())))
         .then((infos) => {
-          const [user, guilds] = infos
+          const [me, guilds] = infos
           if (
-            user &&
+            me &&
             guilds &&
             guilds.some(
               (e) => e.id === process.env.oauth_discord_id_server_discord
             )
           ) {
-            const pseudo = `${user.username}#${user.discriminator}`
+            const pseudo = `${me.username}#${me.discriminator}`
             if (!authenticatedUsers.has(pseudo)) {
               const id = uuidv4()
               serverLog(`${pseudo} ${id}`, 'green', 'WS Server')
@@ -95,7 +90,7 @@ const app = express()
                 discord: pseudo,
                 player: {
                   id,
-                  pseudo: user.username,
+                  pseudo: me.username,
                   x: 0,
                   y: 0
                 },
@@ -111,15 +106,15 @@ const app = express()
               })
             })
           } else {
-            res.status(401).json({
-              message: 'error'
+            res.status(403).json({
+              message: 'forbidden'
             })
           }
         })
         .catch((e) => {
           console.error(e)
-          res.status(500).json({
-            message: 'error'
+          res.status(401).json({
+            message: 'discord fail'
           })
         })
     } else {
@@ -128,7 +123,7 @@ const app = express()
       })
     }
   })
-  .listen(port, function () {
+  .listen(port, () => {
     serverLog(`Server listening at http://localhost:${port}`, 'blue', 'Server')
   })
 
