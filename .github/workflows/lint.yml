@@ -2,9 +2,11 @@ name: Lint
 
 on:
   push:
-    branches-ignore: [master]
+    branches:
+      - master
+      -
   pull_request:
-    branches-ignore: [master]
+
 jobs:
   lint:
     name: Lint
@@ -40,3 +42,4 @@ jobs:
           github_token: ${{ secrets.github_token }}
           eslint: true
           prettier: true
+      
