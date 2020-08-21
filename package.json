@@ -41,7 +41,8 @@
   },
   "keywords": [],
   "jest": {
-    "setupFilesAfterEnv": ["<rootDir>/tests/jest.setup.js"],
+    "resetMocks": true,
+    "setupFilesAfterEnv": ["<rootDir>/tests/helpers/jest.setup.js"],
     "setupFiles": ["dotenv/config"]
   },
   "standard": {

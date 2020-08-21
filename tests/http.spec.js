@@ -1,59 +1,6 @@
-const axios = require('axios').default
-const express = require('express')
-const bodyParser = require('body-parser')
 const contracts = require('../contract')
-const request = async (url, options) => {
-  let response
-  try {
-    response = await axios.request(url, options)
-  } catch (error) {
-    if (error.response) {
-      response = error.response
-    } else {
-      throw error
-    }
-  }
-  return response
-}
-
-const getRandomInt = (min, max) => {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min)) + min
-}
-
-const randomStringNumber = () => [...'xxxxx'].map(() => getRandomInt(0, 9)).join('')
-
-const server = (fakeUrl) =>
-  new Promise((resolve) => {
-    const url = new URL(fakeUrl)
-    const spies = {
-      headers: jest.fn(),
-      body: jest.fn(),
-      response: jest.fn(),
-      req: jest.fn()
-    }
-
-    const fakeApp = express()
-      .use(bodyParser.urlencoded({ extended: true }))
-      .use((req, res) => {
-        spies.headers(req.headers)
-        spies.body(req.body)
-        spies.response(req, res)
-        spies.req({
-          method: req.method,
-          originalUrl: req.originalUrl
-        })
-      })
-
-    const server = fakeApp.listen(url.port, () => {
-      resolve({
-        url,
-        spies,
-        server
-      })
-    })
-  })
+const { server, request } = require('./helpers/http.helper')
+const { randomStringNumber } = require('./helpers/random.helper')
 
 describe('HTTP Server', () => {
   const url = `http://localhost:${process.env.PORT}`
@@ -72,7 +19,7 @@ describe('HTTP Server', () => {
     expect(response.data).toStrictEqual(contracts)
   })
 
-  it('get /player should return list of players', async () => {
+  it.skip('get /player should return list of players', async () => {
     const response = await request(`${url}/players`)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual([])
@@ -97,7 +44,7 @@ describe('HTTP Server', () => {
     })
 
     it(`get ${path} should add headers to prevent CORS failure`, async () => {
-      const response = await axios.options(`${url}${path}`)
+      const response = await request(`${url}${path}`, { method: 'OPTIONS' })
       expect(response.status).toBe(200)
       expect(response.headers).toEqual(expect.objectContaining(corsHeaders))
     })
@@ -110,13 +57,12 @@ describe('HTTP Server', () => {
       fakeServer = await server(process.env.oauth_discord_base_url)
     })
 
-    afterAll((done) => {
-      fakeServer.server.close(done)
+    afterAll(async () => {
+      await fakeServer.destroy()
     })
 
     let options, mockUser, mockToken
     beforeEach(() => {
-      jest.clearAllMocks()
       options = {
         method: 'POST',
         data: {
@@ -139,13 +85,11 @@ describe('HTTP Server', () => {
     describe('when a user from server come', () => {
       let response
       beforeEach(async () => {
-        fakeServer.spies.response
+        fakeServer.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
-          .mockImplementationOnce((_req, res) =>
-            res.status(200).json(mockUser)
-          )
+          .mockImplementationOnce((_req, res) => res.status(200).json(mockUser))
           .mockImplementationOnce((_req, res) =>
             res
               .status(200)
@@ -159,59 +103,62 @@ describe('HTTP Server', () => {
       })
 
       it('should call /oauth2/token for getting user 0Auth token', async () => {
-        expect(fakeServer.spies.req).toHaveBeenNthCalledWith(1, {
+        expect(fakeServer.request).toHaveBeenNthCalledWith(1, {
           method: 'POST',
-          originalUrl: '/oauth2/token'
-        })
-        expect(fakeServer.spies.body).toHaveBeenNthCalledWith(1, {
-          client_id: process.env.oauth_discord_client_id,
-          client_secret: process.env.oauth_discord_client_secret,
-          grant_type: 'authorization_code',
-          redirect_uri: process.env.oauth_discord_redirect_uri,
-          code: options.data.code.toString(),
-          scope: 'identify,guilds'
-        })
-        expect(fakeServer.spies.headers).toHaveBeenNthCalledWith(1, {
-          accept: '*/*',
-          'accept-encoding': expect.anything(),
-          connection: expect.anything(),
-          'content-length': expect.anything(),
-          'content-type': 'application/x-www-form-urlencoded',
-          host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
-          'user-agent': expect.anything()
+          originalUrl: '/oauth2/token',
+          headers: {
+            accept: '*/*',
+            'accept-encoding': expect.anything(),
+            connection: expect.anything(),
+            'content-length': expect.anything(),
+            'content-type': 'application/x-www-form-urlencoded',
+            host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
+            'user-agent': expect.anything()
+          },
+          query: {},
+          body: {
+            client_id: process.env.oauth_discord_client_id,
+            client_secret: process.env.oauth_discord_client_secret,
+            grant_type: 'authorization_code',
+            redirect_uri: process.env.oauth_discord_redirect_uri,
+            code: options.data.code.toString(),
+            scope: 'identify,guilds'
+          }
         })
       })
 
       it('should call /@me for getting user name and discriminator', async () => {
-        expect(fakeServer.spies.req).toHaveBeenNthCalledWith(2, {
+        expect(fakeServer.request).toHaveBeenNthCalledWith(2, {
           method: 'GET',
-          originalUrl: '/users/@me'
+          originalUrl: '/users/@me',
+          headers: {
+            accept: '*/*',
+            'accept-encoding': expect.anything(),
+            authorization: `${mockToken.token_type} ${mockToken.access_token}`,
+            connection: expect.anything(),
+            host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
+            'user-agent': expect.anything()
+          },
+          query: {},
+          body: {}
         })
-        expect(fakeServer.spies.headers).toHaveBeenNthCalledWith(2, {
-          accept: '*/*',
-          'accept-encoding': expect.anything(),
-          authorization: `${mockToken.token_type} ${mockToken.access_token}`,
-          connection: expect.anything(),
-          host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
-          'user-agent': expect.anything()
-        })
-        expect(fakeServer.spies.body).toHaveBeenNthCalledWith(2, {})
       })
 
       it('should call /@me/guilds for getting user servers', async () => {
-        expect(fakeServer.spies.req).toHaveBeenNthCalledWith(3, {
+        expect(fakeServer.request).toHaveBeenNthCalledWith(3, {
           method: 'GET',
-          originalUrl: '/users/@me/guilds'
+          originalUrl: '/users/@me/guilds',
+          headers: {
+            accept: '*/*',
+            'accept-encoding': expect.anything(),
+            authorization: `${mockToken.token_type} ${mockToken.access_token}`,
+            connection: expect.anything(),
+            host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
+            'user-agent': expect.anything()
+          },
+          query: {},
+          body: {}
         })
-        expect(fakeServer.spies.headers).toHaveBeenNthCalledWith(3, {
-          accept: '*/*',
-          'accept-encoding': expect.anything(),
-          authorization: `${mockToken.token_type} ${mockToken.access_token}`,
-          connection: expect.anything(),
-          host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
-          'user-agent': expect.anything()
-        })
-        expect(fakeServer.spies.body).toHaveBeenNthCalledWith(3, {})
       })
 
       it('should respond 200 return user jwt when all step are done', async () => {
@@ -234,14 +181,13 @@ describe('HTTP Server', () => {
 
     describe('when some trouble come with user', () => {
       it('should respond 401 when /oauth2/token respond 401', async () => {
-        fakeServer.spies.response
-          .mockImplementationOnce((_req, res) => {
-            res.status(401).send()
-          })
+        fakeServer.response.mockImplementationOnce((_req, res) => {
+          res.status(401).send()
+        })
 
         const response = await request(`${url}/auth`, options)
 
-        expect(fakeServer.spies.response).toHaveBeenCalledTimes(1)
+        expect(fakeServer.response).toHaveBeenCalledTimes(1)
         expect(response.status).toBe(401)
         expect(response.data).toStrictEqual({
           message: 'discord fail'
@@ -249,17 +195,19 @@ describe('HTTP Server', () => {
       })
 
       it('should not call @me and @me/guilds when /oauth2/token fail', async () => {
-        fakeServer.spies.response
-          .mockImplementation((_req, res) => {
-            res.status(500).send()
-          })
+        fakeServer.response.mockImplementation((_req, res) => {
+          res.status(500).send()
+        })
 
         const response = await request(`${url}/auth`, options)
 
-        expect(fakeServer.spies.response).toHaveBeenCalledTimes(1)
-        expect(fakeServer.spies.req).toHaveBeenCalledWith({
+        expect(fakeServer.response).toHaveBeenCalledTimes(1)
+        expect(fakeServer.request).toHaveBeenCalledWith({
           method: 'POST',
-          originalUrl: '/oauth2/token'
+          originalUrl: '/oauth2/token',
+          headers: expect.anything(),
+          query: expect.anything(),
+          body: expect.anything()
         })
         expect(response.status).toBe(401)
         expect(response.data).toStrictEqual({
@@ -268,13 +216,11 @@ describe('HTTP Server', () => {
       })
 
       it('should respond 401 when /@me respond 401', async () => {
-        fakeServer.spies.response
+        fakeServer.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
-          .mockImplementationOnce((_req, res) =>
-            res.status(401).send()
-          )
+          .mockImplementationOnce((_req, res) => res.status(401).send())
           .mockImplementationOnce((_req, res) =>
             res
               .status(200)
@@ -286,10 +232,13 @@ describe('HTTP Server', () => {
 
         const response = await request(`${url}/auth`, options)
 
-        expect(fakeServer.spies.response).toHaveBeenCalledTimes(3)
-        expect(fakeServer.spies.req).toHaveBeenNthCalledWith(2, {
+        expect(fakeServer.response).toHaveBeenCalledTimes(3)
+        expect(fakeServer.request).toHaveBeenCalledWith({
           method: 'GET',
-          originalUrl: '/users/@me'
+          originalUrl: '/users/@me',
+          headers: expect.anything(),
+          query: expect.anything(),
+          body: expect.anything()
         })
         expect(response.status).toBe(401)
         expect(response.data).toStrictEqual({
@@ -298,20 +247,25 @@ describe('HTTP Server', () => {
       })
 
       it('should respond 403 when /@me/guilds do not return oauth_discord_id_server_discord (so user is not in server)', async () => {
-        fakeServer.spies.response
+        fakeServer.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
-          .mockImplementationOnce((_req, res) =>
-            res.status(200).json(mockUser)
-          )
+          .mockImplementationOnce((_req, res) => res.status(200).json(mockUser))
           .mockImplementationOnce((_req, res) =>
             res.status(200).json([{ id: 'anotherone' }, { id: 'bitedadust' }])
           )
 
         const response = await request(`${url}/auth`, options)
 
-        expect(fakeServer.spies.response).toHaveBeenCalledTimes(3)
+        expect(fakeServer.response).toHaveBeenCalledTimes(3)
+        expect(fakeServer.request).toHaveBeenCalledWith({
+          method: 'GET',
+          originalUrl: '/users/@me/guilds',
+          headers: expect.anything(),
+          query: expect.anything(),
+          body: expect.anything()
+        })
         expect(response.status).toBe(403)
         expect(response.data).toStrictEqual({
           message: 'forbidden'
@@ -319,22 +273,23 @@ describe('HTTP Server', () => {
       })
 
       it('should respond 401 when /@me/guilds respond 401', async () => {
-        fakeServer.spies.response
+        fakeServer.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
-          .mockImplementationOnce((_req, res) =>
-            res.status(200).json(mockUser)
-          )
-          .mockImplementationOnce((_req, res) =>
-            res
-              .status(401)
-              .send()
-          )
+          .mockImplementationOnce((_req, res) => res.status(200).json(mockUser))
+          .mockImplementationOnce((_req, res) => res.status(401).send())
 
         const response = await request(`${url}/auth`, options)
 
-        expect(fakeServer.spies.response).toHaveBeenCalledTimes(3)
+        expect(fakeServer.response).toHaveBeenCalledTimes(3)
+        expect(fakeServer.request).toHaveBeenCalledWith({
+          method: 'GET',
+          originalUrl: '/users/@me/guilds',
+          headers: expect.anything(),
+          query: expect.anything(),
+          body: expect.anything()
+        })
         expect(response.status).toBe(401)
         expect(response.data).toStrictEqual({
           message: 'discord fail'
