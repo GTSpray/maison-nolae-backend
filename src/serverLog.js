@@ -9,12 +9,12 @@ function serverLog (data, color, type) {
   })
   if (/[0-9A-z]+/.test(log)) {
     console.log(
-      `${chalk[color].bold(` ┏ ${type} -------------------`) 
-      }\n\n${ 
-      log 
-      }\n${ 
-      chalk[color].bold(` ┗ ${d.toLocaleString()} ------`) 
-      }\n`
+      chalk[color].bold(` ┏ ${type} -------------------`) +
+      '\n\n' +
+      log +
+      '\n' +
+      chalk[color].bold(` ┗ ${d.toLocaleString()} ------`) +
+      '\n'
     )
   }
 }

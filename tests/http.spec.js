@@ -61,7 +61,7 @@ describe('HTTP Server', () => {
       await fakeServer.destroy()
     })
 
-    let options; let mockUser; let mockToken
+    let options, mockUser, mockToken
     beforeEach(() => {
       options = {
         method: 'POST',

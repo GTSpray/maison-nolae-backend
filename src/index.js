@@ -1,7 +1,10 @@
 require('dotenv').config()
 
 const { cors } = require('./middleware/header.middleware');
+const { error } = require('./middleware/error.middleware');
 
+const { hello } = require('./controller/hello.controller')
+const { contracts } = require('./controller/contracts.controller')
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -11,11 +14,13 @@ const { v4: uuidv4 } = require('uuid')
 const favicon = require('serve-favicon')
 const path = require('path')
 const fetch = require('node-fetch')
+const { serverLog } = require('./serverLog')
 
+const authService = require('./service/auth.service')
 
+const apiContracts = require('./contract.js')
 
 const Ajv = require('ajv')
-
 const ajv = Ajv({ allErrors: true })
 
 const authenticatedUsers = new Map()
@@ -123,13 +128,6 @@ const app = express()
   })
 
 const { Server } = require('ws')
-const apiContracts = require('./contract.js')
-const authService = require('./service/auth.service')
-const { serverLog } = require('./serverLog')
-const { contracts } = require('./controller/contracts.controller')
-const { error } = require('./middleware/error.middleware');
-const { hello } = require('./controller/hello.controller')
-
 const wss = new Server({ server: app })
 const validateWebsocket = ajv.compile(apiContracts.websocket)
 const validatePlayer = ajv.compile(apiContracts.player)
@@ -148,7 +146,7 @@ wss.on('connection', (ws) => {
   })
   ws.on('message', (message) => {
     try {
-      const event = JSON.parse(message)
+      var event = JSON.parse(message)
       const valid = validateWebsocket(event)
       if (!valid) {
         throw validateWebsocket.errors[0]
@@ -190,7 +188,7 @@ wss.on('connection', (ws) => {
       if (session) {
         const valid = validatePlayer(payload)
         if (valid) {
-          const {id} = session.player
+          const id = session.player.id
           session.player = {
             ...payload,
             id

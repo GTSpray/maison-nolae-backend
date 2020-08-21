@@ -1,6 +1,5 @@
 const jose = require('jose')
 const Ajv = require('ajv')
-
 expect.extend({
   toMatchApiContract (body, schema) {
     const ajv = new Ajv()
