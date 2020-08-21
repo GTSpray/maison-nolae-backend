@@ -39,3 +39,7 @@ jobs:
       - name: Lint
         run: |
           yarn lint:fix
+    - name: StandardJs
+      uses: docker://jopereyral/standardjs-action
+      with:
+        args: --fix
