@@ -1,13 +1,13 @@
-const getRandomInt = (min, max) => {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min)) + min
+const randomInt = (min, max) => {
+  const ceilMin = Math.ceil(min)
+  const floorMax = Math.floor(max)
+  return Math.floor(Math.random() * (floorMax - ceilMin)) + ceilMin
 }
 
-const randomStringNumber = () =>
-  [...'xxxxx'].map(() => getRandomInt(0, 9)).join('')
+const randomStringNumber = (n) =>
+  Array.apply(null, Array(n)).map(() => randomInt(0, 9)).join('')
 
 module.exports = {
-  getRandomInt,
+  randomInt,
   randomStringNumber
 }

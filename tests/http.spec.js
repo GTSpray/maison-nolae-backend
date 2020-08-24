@@ -1,12 +1,12 @@
 const contracts = require('../src/contract')
-const { server, request } = require('./helpers/http.helper')
+const { server, request, randomAuth } = require('./helpers/http.helper')
 const { randomStringNumber } = require('./helpers/random.helper')
 
 describe('HTTP Server', () => {
-  const url = `http://localhost:${process.env.PORT}`
+  const httpUrl = `http://localhost:${process.env.PORT}`
 
   it('get / should return hello world', async () => {
-    const response = await request(url)
+    const response = await request(httpUrl)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual({
       message: 'Hello Wrold!'
@@ -14,15 +14,37 @@ describe('HTTP Server', () => {
   })
 
   it('get /contracts should return list of contracts', async () => {
-    const response = await request(`${url}/contracts`)
+    const response = await request(`${httpUrl}/contracts`)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual(contracts)
   })
 
-  it.skip('get /player should return list of players', async () => {
-    const response = await request(`${url}/players`)
-    expect(response.status).toBe(200)
-    expect(response.data).toStrictEqual([])
+  describe('/players', () => {
+    let oAuthS
+
+    beforeAll(async () => {
+      oAuthS = await server(process.env.oauth_discord_base_url)
+    })
+
+    afterAll(async () => {
+      await oAuthS.destroy()
+    })
+
+    let mockUser
+    beforeEach(async () => {
+      mockUser = []
+
+      for (let i = 0; i < 6; i++) {
+        const auth = await randomAuth(oAuthS, `${httpUrl}/auth`)
+        mockUser.push(auth.player)
+      }
+    })
+
+    it('get /players should return list of players', async () => {
+      const response = await request(`${httpUrl}/players`)
+      expect(response.status).toBe(200)
+      expect(response.data).toEqual(expect.arrayContaining(mockUser))
+    })
   });
 
   [
@@ -39,26 +61,26 @@ describe('HTTP Server', () => {
     }
 
     it(`${method} ${path} should add headers to prevent CORS failure`, async () => {
-      const response = await request(`${url}${path}`, { method })
+      const response = await request(`${httpUrl}${path}`, { method })
       expect(response.headers).toEqual(expect.objectContaining(corsHeaders))
     })
 
     it(`get ${path} should add headers to prevent CORS failure`, async () => {
-      const response = await request(`${url}${path}`, { method: 'OPTIONS' })
+      const response = await request(`${httpUrl}${path}`, { method: 'OPTIONS' })
       expect(response.status).toBe(200)
       expect(response.headers).toEqual(expect.objectContaining(corsHeaders))
     })
   })
 
   describe('/auth', () => {
-    let fakeServer
+    let oAuthS
 
     beforeAll(async () => {
-      fakeServer = await server(process.env.oauth_discord_base_url)
+      oAuthS = await server(process.env.oauth_discord_base_url)
     })
 
     afterAll(async () => {
-      await fakeServer.destroy()
+      await oAuthS.destroy()
     })
 
     let options, mockUser, mockToken
@@ -66,18 +88,18 @@ describe('HTTP Server', () => {
       options = {
         method: 'POST',
         data: {
-          code: randomStringNumber()
+          code: randomStringNumber(10)
         }
       }
       mockUser = {
         username: 'johnnyKnoxville',
-        discriminator: randomStringNumber()
+        discriminator: randomStringNumber(4)
       }
       mockToken = {
-        access_token: randomStringNumber(),
+        access_token: randomStringNumber(10),
         token_type: 'Bearer',
         expires_in: 604800,
-        refresh_token: randomStringNumber(),
+        refresh_token: randomStringNumber(10),
         scope: 'identify,guilds'
       }
     })
@@ -85,7 +107,7 @@ describe('HTTP Server', () => {
     describe('when a user from server come', () => {
       let response
       beforeEach(async () => {
-        fakeServer.response
+        oAuthS.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
@@ -99,11 +121,11 @@ describe('HTTP Server', () => {
               ])
           )
 
-        response = await request(`${url}/auth`, options)
+        response = await request(`${httpUrl}/auth`, options)
       })
 
       it('should call /oauth2/token for getting user 0Auth token', async () => {
-        expect(fakeServer.request).toHaveBeenNthCalledWith(1, {
+        expect(oAuthS.request).toHaveBeenNthCalledWith(1, {
           method: 'POST',
           originalUrl: '/oauth2/token',
           headers: {
@@ -112,7 +134,7 @@ describe('HTTP Server', () => {
             connection: expect.anything(),
             'content-length': expect.anything(),
             'content-type': 'application/x-www-form-urlencoded',
-            host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
+            host: `${oAuthS.url.hostname}:${oAuthS.url.port}`,
             'user-agent': expect.anything()
           },
           query: {},
@@ -128,7 +150,7 @@ describe('HTTP Server', () => {
       })
 
       it('should call /@me for getting user name and discriminator', async () => {
-        expect(fakeServer.request).toHaveBeenNthCalledWith(2, {
+        expect(oAuthS.request).toHaveBeenNthCalledWith(2, {
           method: 'GET',
           originalUrl: '/users/@me',
           headers: {
@@ -136,7 +158,7 @@ describe('HTTP Server', () => {
             'accept-encoding': expect.anything(),
             authorization: `${mockToken.token_type} ${mockToken.access_token}`,
             connection: expect.anything(),
-            host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
+            host: `${oAuthS.url.hostname}:${oAuthS.url.port}`,
             'user-agent': expect.anything()
           },
           query: {},
@@ -145,7 +167,7 @@ describe('HTTP Server', () => {
       })
 
       it('should call /@me/guilds for getting user servers', async () => {
-        expect(fakeServer.request).toHaveBeenNthCalledWith(3, {
+        expect(oAuthS.request).toHaveBeenNthCalledWith(3, {
           method: 'GET',
           originalUrl: '/users/@me/guilds',
           headers: {
@@ -153,7 +175,7 @@ describe('HTTP Server', () => {
             'accept-encoding': expect.anything(),
             authorization: `${mockToken.token_type} ${mockToken.access_token}`,
             connection: expect.anything(),
-            host: `${fakeServer.url.hostname}:${fakeServer.url.port}`,
+            host: `${oAuthS.url.hostname}:${oAuthS.url.port}`,
             'user-agent': expect.anything()
           },
           query: {},
@@ -177,17 +199,42 @@ describe('HTTP Server', () => {
           pseudo: `${mockUser.username}#${mockUser.discriminator}`
         })
       })
+
+      it('should get same id for same user', async () => {
+        expect(response.status).toBe(200)
+        oAuthS.response
+          .mockImplementationOnce((_req, res) => {
+            res.status(200).json(mockToken)
+          })
+          .mockImplementationOnce((_req, res) => res.status(200).json(mockUser))
+          .mockImplementationOnce((_req, res) =>
+            res
+              .status(200)
+              .json([
+                { id: 'another' },
+                { id: process.env.oauth_discord_id_server_discord }
+              ])
+          )
+
+        const anotherAuth = await request(`${httpUrl}/auth`, options)
+
+        expect(anotherAuth.status).toBe(200)
+        expect(anotherAuth.data.token).toMatchJWT({
+          id: response.data.player.id,
+          pseudo: `${mockUser.username}#${mockUser.discriminator}`
+        })
+      })
     })
 
     describe('when some trouble come with user', () => {
       it('should respond 401 when /oauth2/token respond 401', async () => {
-        fakeServer.response.mockImplementationOnce((_req, res) => {
+        oAuthS.response.mockImplementationOnce((_req, res) => {
           res.status(401).send()
         })
 
-        const response = await request(`${url}/auth`, options)
+        const response = await request(`${httpUrl}/auth`, options)
 
-        expect(fakeServer.response).toHaveBeenCalledTimes(1)
+        expect(oAuthS.response).toHaveBeenCalledTimes(1)
         expect(response.status).toBe(401)
         expect(response.data).toStrictEqual({
           message: 'discord fail'
@@ -195,14 +242,14 @@ describe('HTTP Server', () => {
       })
 
       it('should not call @me and @me/guilds when /oauth2/token fail', async () => {
-        fakeServer.response.mockImplementation((_req, res) => {
+        oAuthS.response.mockImplementation((_req, res) => {
           res.status(500).send()
         })
 
-        const response = await request(`${url}/auth`, options)
+        const response = await request(`${httpUrl}/auth`, options)
 
-        expect(fakeServer.response).toHaveBeenCalledTimes(1)
-        expect(fakeServer.request).toHaveBeenCalledWith({
+        expect(oAuthS.response).toHaveBeenCalledTimes(1)
+        expect(oAuthS.request).toHaveBeenCalledWith({
           method: 'POST',
           originalUrl: '/oauth2/token',
           headers: expect.anything(),
@@ -216,7 +263,7 @@ describe('HTTP Server', () => {
       })
 
       it('should respond 401 when /@me respond 401', async () => {
-        fakeServer.response
+        oAuthS.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
@@ -230,10 +277,10 @@ describe('HTTP Server', () => {
               ])
           )
 
-        const response = await request(`${url}/auth`, options)
+        const response = await request(`${httpUrl}/auth`, options)
 
-        expect(fakeServer.response).toHaveBeenCalledTimes(3)
-        expect(fakeServer.request).toHaveBeenCalledWith({
+        expect(oAuthS.response).toHaveBeenCalledTimes(3)
+        expect(oAuthS.request).toHaveBeenCalledWith({
           method: 'GET',
           originalUrl: '/users/@me',
           headers: expect.anything(),
@@ -247,7 +294,7 @@ describe('HTTP Server', () => {
       })
 
       it('should respond 403 when /@me/guilds do not return oauth_discord_id_server_discord (so user is not in server)', async () => {
-        fakeServer.response
+        oAuthS.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
@@ -256,10 +303,10 @@ describe('HTTP Server', () => {
             res.status(200).json([{ id: 'anotherone' }, { id: 'bitedadust' }])
           )
 
-        const response = await request(`${url}/auth`, options)
+        const response = await request(`${httpUrl}/auth`, options)
 
-        expect(fakeServer.response).toHaveBeenCalledTimes(3)
-        expect(fakeServer.request).toHaveBeenCalledWith({
+        expect(oAuthS.response).toHaveBeenCalledTimes(3)
+        expect(oAuthS.request).toHaveBeenCalledWith({
           method: 'GET',
           originalUrl: '/users/@me/guilds',
           headers: expect.anything(),
@@ -273,17 +320,17 @@ describe('HTTP Server', () => {
       })
 
       it('should respond 401 when /@me/guilds respond 401', async () => {
-        fakeServer.response
+        oAuthS.response
           .mockImplementationOnce((_req, res) => {
             res.status(200).json(mockToken)
           })
           .mockImplementationOnce((_req, res) => res.status(200).json(mockUser))
           .mockImplementationOnce((_req, res) => res.status(401).send())
 
-        const response = await request(`${url}/auth`, options)
+        const response = await request(`${httpUrl}/auth`, options)
 
-        expect(fakeServer.response).toHaveBeenCalledTimes(3)
-        expect(fakeServer.request).toHaveBeenCalledWith({
+        expect(oAuthS.response).toHaveBeenCalledTimes(3)
+        expect(oAuthS.request).toHaveBeenCalledWith({
           method: 'GET',
           originalUrl: '/users/@me/guilds',
           headers: expect.anything(),
