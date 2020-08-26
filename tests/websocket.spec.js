@@ -2,21 +2,11 @@ const { socketResponse, wsClient, wsResponse, authWsClient } = require('./helper
 const { server, request } = require('./helpers/http.helper')
 const { randomInt, randomStringNumber } = require('./helpers/random.helper')
 
-describe('Websocket', () => {
+describe('TI Websocket', () => {
   const wsUrl = `ws://localhost:${process.env.PORT}`
   const httpUrl = `http://localhost:${process.env.PORT}`
 
-  it('should connect websockets', (done) => {
-    expect.assertions(1)
-    const ws = wsClient(wsUrl)
-      .on('open', () => {
-        expect(true).toBe(true)
-        ws.close()
-      })
-      .on('close', () => done())
-  })
-
-  it('should not share ws sessions', async () => {
+  it.concurrent('should not share ws sessions', async () => {
     expect.assertions(2)
     const spy = jest.fn()
     const ws = wsClient(wsUrl).on('message', spy)
@@ -28,17 +18,17 @@ describe('Websocket', () => {
     expect(response).toBeDefined()
   })
 
-  it('should respond invalid event when message is not event', async () => {
+  it.concurrent('should respond invalid event when message is not event', async () => {
     const response = await socketResponse(wsUrl, {})
     expect(response).toStrictEqual({ error: 'invalid event' })
   })
 
-  it('should respond invalid event when message is string', async () => {
+  it.concurrent('should respond invalid event when message is string', async () => {
     const response = await socketResponse(wsUrl, 'not json')
     expect(response).toStrictEqual({ error: 'invalid event' })
   })
 
-  it('should respond invalid auth method when authentication.token is bad formated ', async () => {
+  it.concurrent('should respond invalid auth method when authentication.token is bad formated ', async () => {
     const response = await socketResponse(wsUrl, {
       type: 'authentication',
       payload: {
@@ -48,7 +38,7 @@ describe('Websocket', () => {
     expect(response).toStrictEqual({ error: 'Invalid auth method' })
   })
 
-  it('should respond unable to get session when user use token from another platform', async () => {
+  it.concurrent('should respond unable to get session when user use token from another platform', async () => {
     const response = await socketResponse(wsUrl, {
       type: 'authentication',
       payload: {

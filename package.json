@@ -8,7 +8,7 @@
     "start": "nodemon src/index.js ",
     "start:daemon": "forever start -c \"npm start\" ./ ",
     "test": "jest --runInBand --no-cache --ci --verbose --colors --env=node",
-    "test:watch": "jest --watchAll --ci --maxWorkers=4 --colors --env=node",
+    "test:watch": "jest --watchAll --ci --runInBand --colors --env=node",
     "test:ci:docker": "npm-run-all start:daemon test:watch",
     "lint": "standard",
     "lint:fix": "standard --fix",
