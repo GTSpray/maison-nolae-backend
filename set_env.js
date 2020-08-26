@@ -12,7 +12,10 @@ while (m !== null) {
   m = regex.exec(envSample)
 }
 try {
-  fs.writeFileSync('.env', newLines.join('\r'))
+  const content =  newLines.join('\n')
+    // .replace(/\r\n/gm, "\n")    //normalize
+    // .replace(/\n/gm,   "\r\n")  //CR+LF  -  Windows EOL
+  fs.writeFileSync('.env', content, {flag:"w", encoding:"utf8"}); 
 } catch (err) {
   // An error occurred
   console.error(err)
