@@ -2,10 +2,10 @@ const contracts = require('../src/contract')
 const { server, request, randomAuth } = require('./helpers/http.helper')
 const { randomStringNumber } = require('./helpers/random.helper')
 
-describe('HTTP Server', () => {
+describe('TI HTTP Server', () => {
   const httpUrl = `http://localhost:${process.env.PORT}`
 
-  it('get / should return hello world', async () => {
+  it.concurrent('get / should return hello world', async () => {
     const response = await request(httpUrl)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual({
@@ -13,7 +13,7 @@ describe('HTTP Server', () => {
     })
   })
 
-  it('get /contracts should return list of contracts', async () => {
+  it.concurrent('get /contracts should return list of contracts', async () => {
     const response = await request(`${httpUrl}/contracts`)
     expect(response.status).toBe(200)
     expect(response.data).toStrictEqual(contracts)
@@ -60,12 +60,12 @@ describe('HTTP Server', () => {
       'access-control-max-age': '1728000'
     }
 
-    it(`${method} ${path} should add headers to prevent CORS failure`, async () => {
+    it.concurrent(`${method} ${path} should add headers to prevent CORS failure`, async () => {
       const response = await request(`${httpUrl}${path}`, { method })
       expect(response.headers).toEqual(expect.objectContaining(corsHeaders))
     })
 
-    it(`get ${path} should add headers to prevent CORS failure`, async () => {
+    it.concurrent(`get ${path} should add headers to prevent CORS failure`, async () => {
       const response = await request(`${httpUrl}${path}`, { method: 'OPTIONS' })
       expect(response.status).toBe(200)
       expect(response.headers).toEqual(expect.objectContaining(corsHeaders))

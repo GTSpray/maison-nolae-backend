@@ -17,6 +17,10 @@ module.exports.request = async (url, options) => {
   return response
 }
 
+const destroy = (server) => {
+  return () => new Promise((resolve) => server.close(resolve))
+}
+
 module.exports.server = (fakeUrl) =>
   new Promise((resolve) => {
     const url = new URL(fakeUrl)
@@ -39,7 +43,7 @@ module.exports.server = (fakeUrl) =>
 
     const server = fakeApp.listen(url.port, () => {
       resolve({
-        destroy: () => new Promise((resolve) => server.close(resolve)),
+        destroy: destroy(server),
         url,
         response,
         request

@@ -1,6 +1,6 @@
 const apiContracts = require('../src/contract.js')
 
-describe('API contract', () => {
+describe('TU API contract', () => {
   describe('player', () => {
     const contract = apiContracts.player.properties
 
