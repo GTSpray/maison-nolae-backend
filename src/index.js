@@ -106,6 +106,7 @@ const app = express()
               })
             })
           } else {
+            logger.info('Player authentication fail', { me })
             res.status(403).json({
               message: 'forbidden'
             })
