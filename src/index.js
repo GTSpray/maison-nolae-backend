@@ -14,7 +14,7 @@ const { v4: uuidv4 } = require('uuid')
 const favicon = require('serve-favicon')
 const path = require('path')
 const fetch = require('node-fetch')
-const { serverLog } = require('./serverLog')
+const logger = require('heroku-logger')
 
 const authService = require('./service/auth.service')
 
@@ -85,7 +85,7 @@ const app = express()
             const pseudo = `${me.username}#${me.discriminator}`
             if (!authenticatedUsers.has(pseudo)) {
               const id = uuidv4()
-              serverLog(`${pseudo} ${id}`, 'green', 'WS Server')
+              logger.info('Player authentication', { pseudo, id })
               authenticatedUsers.set(pseudo, {
                 discord: pseudo,
                 player: {
@@ -112,7 +112,7 @@ const app = express()
           }
         })
         .catch((e) => {
-          console.error(e)
+          logger.error('Discord fail', e)
           res.status(401).json({
             message: 'discord fail'
           })
@@ -124,7 +124,7 @@ const app = express()
     }
   })
   .listen(port, () => {
-    serverLog(`Server listening at http://localhost:${port}`, 'blue', 'Server')
+    logger.info('Starting server', { port })
   })
 
 const { Server } = require('ws')
@@ -139,7 +139,7 @@ wss.on('connection', (ws) => {
     if (session) {
       session.ws = session.ws.filter((e) => e !== ws)
       if (session.ws.lengt === 0) {
-        serverLog(`Player quit ${session.player.id}`, 'green', 'WS Server')
+        logger.info('Player quit', { id: session.player.id, discord: session.discord })
         authenticatedUsers.delete(session.discord)
       }
     }
@@ -153,7 +153,7 @@ wss.on('connection', (ws) => {
       }
       ws.emit(event.type, event.payload)
     } catch (error) {
-      console.error('not an event', error)
+      logger.error('Invalid Event', error)
       ws.emit('_error', {
         error: 'invalid event'
       })
@@ -178,7 +178,7 @@ wss.on('connection', (ws) => {
           }
         })
       } else {
-        console.error(validateAuthentication.errors)
+        logger.error('Invalid auth method', validateAuthentication.errors)
         ws.emit('_error', {
           error: 'Invalid auth method'
         })
@@ -202,11 +202,13 @@ wss.on('connection', (ws) => {
             }
           })
         } else {
+          logger.info('Player', { id: session.player.id, discord: session.discord })
+          logger.error('Not authentified session', validatePlayer.errors)
           console.error(session.player.id, validatePlayer.errors)
         }
       } else {
+        logger.error('Not authentified session', payload)
         ws.send('Not authentified session')
-        console.error('Not authentified session')
       }
     })
 })
