@@ -5,6 +5,7 @@
   "license": "Beerware",
   "main": "src/index.js",
   "scripts": {
+    "heroku-prebuild": "node set_env.js",
     "start": "nodemon src/index.js ",
     "start:daemon": "forever start -c \"npm start\" ./ ",
     "test": "jest --runInBand --no-cache --ci --verbose --colors --env=node",
