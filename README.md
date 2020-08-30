@@ -1,6 +1,6 @@
 # maison-nolae-backend
 
-![CircleCI](https://circleci.com/gh/GTSpray/maison-nolae-backend/tree/develop.svg?style=svg "CircleCI")
+![CircleCI](https://circleci.com/gh/GTSpray/maison-nolae-backend/tree/develop.svg?style=shield "CircleCI")
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest)
 
