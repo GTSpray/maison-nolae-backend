@@ -5,6 +5,7 @@ const { error } = require('./middleware/error.middleware')
 
 const { hello } = require('./controller/hello.controller')
 const { contracts } = require('./controller/contracts.controller')
+const { getMap } = require('./controller/map.controller')
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -36,6 +37,7 @@ const app = express()
   .use(error)
   .get('/', hello)
   .get('/contracts', contracts)
+  .get('/map', getMap)
   .get('/players', (_req, res) => {
     const players = Array.from(authenticatedUsers.values()).map(
       (e) => e.player
