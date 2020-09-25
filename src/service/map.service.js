@@ -24,6 +24,7 @@ const { minX, minY, maxX, maxY } = parseWall(archifacile, svg)
 parseHole(archifacile, svg)
 parseRooms(archifacile, svg)
 
+svg.selectAll('line.boundary').remove()
 svg.style('maw-width', '100%')
 svg.style('maw-height', '100%')
 svg.attr('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`)
@@ -36,9 +37,17 @@ function parseRooms (houseDescription, svg) {
   const isNext = (a, b) => (a.wall !== b.wall && (a.x1 === b.x2 &&
  a.y1 === b.y2))
 
-  const isNextInverted = (a, b) => a.wall !== b.wall && ((a.x1 === b.x1 &&
+  const isNextInverted = (a, b) => (a.wall !== b.wall && ((a.x1 === b.x1 &&
  a.y1 === b.y1) || (a.x2 === b.x2 &&
- a.y2 === b.y2))
+ a.y2 === b.y2)))
+
+  const invert = (a, attr1, attr2) => {
+    const v1 = a[attr1]
+    const v2 = a[attr2]
+
+    a[attr1] = v2
+    a[attr2] = v1
+  }
 
   for (const plan of houseDescription.data.plan.plans) {
     const g = svg.append('g').attr('id', 'rooms')
@@ -50,7 +59,7 @@ function parseRooms (houseDescription, svg) {
         .each(function () {
           const boundary = d3.select(this)
           boundaries.push({
-            pass: 0,
+            pass: false,
             wall: boundary.attr('wall'),
             x1: parseInt(boundary.attr('x1'), 10),
             y1: parseInt(boundary.attr('y1'), 10),
@@ -60,8 +69,8 @@ function parseRooms (houseDescription, svg) {
         })
 
       let current = boundaries[0]
-      while (current && current.pass < 1) {
-        current.pass += 1
+      while (current && !current.pass) {
+        current.pass = true
         walls.push(current.wall)
         path.push({
           x: current.x1,
@@ -71,22 +80,19 @@ function parseRooms (houseDescription, svg) {
           x: current.x2,
           y: current.y2
         })
-        let next = boundaries.find(e => isNext(e, current))
+        let next = boundaries.find(e => !e.pass && isNext(e, current))
         if (!next) {
-          next = boundaries.find(e => isNextInverted(e, current) && !walls.includes(e.wall))
+          next = boundaries.find(e => !e.pass && isNextInverted(e, current))
           if (next) {
-            next = {
-              wall: next.wall,
-              pass: 0,
-              x1: next.x2,
-              y1: next.y2,
-              x2: next.x1,
-              y2: next.y1
-            }
+            invert(next, 'x1', 'x2')
+            invert(next, 'y1', 'y2')
           }
         }
         current = next
+        console.log('current => %o', current)
       }
+
+      // console.log('%s => %o', room.nom, boundaries)
 
       if (!room.exterieur) {
         g.append('path')

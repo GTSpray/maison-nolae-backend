@@ -17,7 +17,7 @@
                 "modification": {
                     "login": "123456",
                     "cle": "2e9c6c5eab0194a3",
-                    "date": "2020-09-25 17:36:47"
+                    "date": "2020-09-25 21:38:43"
                 },
                 "creation": {
                     "login": "123456",
@@ -27,10 +27,10 @@
                 "planid": "fe645e002892cf198a12d412215ff79f"
             },
             "affichage": {
-                "x0": 144.48924444444,
-                "y0": -25.2268,
-                "zx": 0.046005119909369,
-                "zy": 0.046005119909369
+                "x0": 39.040902034751,
+                "y0": -31.843823816872,
+                "zx": 0.022186111067404,
+                "zy": 0.022186111067404
             },
             "plans": [
                 {
@@ -56,14 +56,14 @@
                                     "iCote": 0,
                                     "iMur": 0,
                                     "index": "0-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 0,
                                     "index": "0-1",
-                                    "iPiece": 4
+                                    "iPiece": 3
                                 }
                             ]
                         },
@@ -82,14 +82,14 @@
                                     "iCote": 0,
                                     "iMur": 1,
                                     "index": "1-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 1,
                                     "index": "1-1",
-                                    "iPiece": 4
+                                    "iPiece": 3
                                 }
                             ]
                         },
@@ -108,14 +108,14 @@
                                     "iCote": 0,
                                     "iMur": 2,
                                     "index": "2-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 2,
                                     "index": "2-1",
-                                    "iPiece": 4
+                                    "iPiece": 3
                                 }
                             ]
                         },
@@ -134,14 +134,14 @@
                                     "iCote": 0,
                                     "iMur": 3,
                                     "index": "3-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 3,
                                     "index": "3-1",
-                                    "iPiece": 4
+                                    "iPiece": 3
                                 }
                             ]
                         },
@@ -160,7 +160,7 @@
                                     "iCote": 0,
                                     "iMur": 4,
                                     "index": "4-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
@@ -186,7 +186,7 @@
                                     "iCote": 0,
                                     "iMur": 5,
                                     "index": "5-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
@@ -212,7 +212,7 @@
                                     "iCote": 0,
                                     "iMur": 6,
                                     "index": "6-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
@@ -245,7 +245,7 @@
                                     "iCote": 1,
                                     "iMur": 7,
                                     "index": "7-1",
-                                    "iPiece": 4
+                                    "iPiece": 3
                                 }
                             ]
                         },
@@ -264,14 +264,14 @@
                                     "iCote": 0,
                                     "iMur": 8,
                                     "index": "8-0",
-                                    "iPiece": 1
+                                    "iPiece": 6
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 8,
                                     "index": "8-1",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 }
                             ]
                         },
@@ -290,21 +290,21 @@
                                     "iCote": 0,
                                     "iMur": 9,
                                     "index": "9-0",
-                                    "iPiece": 1
+                                    "iPiece": 6
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 9,
                                     "index": "9-1",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 }
                             ]
                         },
                         {
                             "quoi": "mur",
                             "id": 11,
-                            "x1": 4727,
+                            "x1": -1338,
                             "y1": 9070,
                             "x2": -2403,
                             "y2": 9070,
@@ -316,14 +316,14 @@
                                     "iCote": 0,
                                     "iMur": 10,
                                     "index": "10-0",
-                                    "iPiece": 1
+                                    "iPiece": 6
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 10,
                                     "index": "10-1",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 }
                             ]
                         },
@@ -342,14 +342,14 @@
                                     "iCote": 0,
                                     "iMur": 11,
                                     "index": "11-0",
-                                    "iPiece": 1
+                                    "iPiece": 6
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 11,
                                     "index": "11-1",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 }
                             ]
                         },
@@ -368,14 +368,14 @@
                                     "iCote": 0,
                                     "iMur": 12,
                                     "index": "12-0",
-                                    "iPiece": 2
+                                    "iPiece": 1
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 12,
                                     "index": "12-1",
-                                    "iPiece": 3
+                                    "iPiece": 2
                                 }
                             ]
                         },
@@ -394,14 +394,14 @@
                                     "iCote": 0,
                                     "iMur": 13,
                                     "index": "13-0",
-                                    "iPiece": 2
+                                    "iPiece": 1
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 13,
                                     "index": "13-1",
-                                    "iPiece": 3
+                                    "iPiece": 2
                                 }
                             ]
                         },
@@ -420,14 +420,14 @@
                                     "iCote": 0,
                                     "iMur": 14,
                                     "index": "14-0",
-                                    "iPiece": 2
+                                    "iPiece": 1
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 14,
                                     "index": "14-1",
-                                    "iPiece": 3
+                                    "iPiece": 2
                                 }
                             ]
                         },
@@ -446,14 +446,14 @@
                                     "iCote": 0,
                                     "iMur": 15,
                                     "index": "15-0",
-                                    "iPiece": 2
+                                    "iPiece": 1
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 15,
                                     "index": "15-1",
-                                    "iPiece": 3
+                                    "iPiece": 2
                                 }
                             ]
                         },
@@ -472,14 +472,14 @@
                                     "iCote": 0,
                                     "iMur": 16,
                                     "index": "16-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 16,
                                     "index": "16-1",
-                                    "iPiece": 6
+                                    "iPiece": 5
                                 }
                             ]
                         },
@@ -498,14 +498,14 @@
                                     "iCote": 0,
                                     "iMur": 17,
                                     "index": "17-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 17,
                                     "index": "17-1",
-                                    "iPiece": 6
+                                    "iPiece": 5
                                 }
                             ]
                         },
@@ -524,14 +524,14 @@
                                     "iCote": 0,
                                     "iMur": 18,
                                     "index": "18-0",
-                                    "iPiece": 1
+                                    "iPiece": 6
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 18,
                                     "index": "18-1",
-                                    "iPiece": 6
+                                    "iPiece": 5
                                 }
                             ]
                         },
@@ -550,14 +550,14 @@
                                     "iCote": 0,
                                     "iMur": 19,
                                     "index": "19-0",
-                                    "iPiece": 5
+                                    "iPiece": 4
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 19,
                                     "index": "19-1",
-                                    "iPiece": 6
+                                    "iPiece": 5
                                 }
                             ]
                         },
@@ -576,14 +576,14 @@
                                     "iCote": 0,
                                     "iMur": 20,
                                     "index": "20-0",
-                                    "iPiece": 6
+                                    "iPiece": 5
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 20,
                                     "index": "20-1",
-                                    "iPiece": 4
+                                    "iPiece": 3
                                 }
                             ]
                         },
@@ -602,14 +602,118 @@
                                     "iCote": 0,
                                     "iMur": 21,
                                     "index": "21-0",
-                                    "iPiece": 1
+                                    "iPiece": 6
                                 },
                                 {
                                     "quoi": "murcote",
                                     "iCote": 1,
                                     "iMur": 21,
                                     "index": "21-1",
-                                    "iPiece": 5
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 23,
+                            "x1": 3149,
+                            "y1": 9070,
+                            "x2": -1338,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 22,
+                                    "index": "22-0",
+                                    "iPiece": 7
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 22,
+                                    "index": "22-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 24,
+                            "x1": 3149,
+                            "y1": 9070,
+                            "x2": -1338,
+                            "y2": 13162,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 23,
+                                    "index": "23-0",
+                                    "iPiece": 6
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 23,
+                                    "index": "23-1",
+                                    "iPiece": 7
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 25,
+                            "x1": 4727,
+                            "y1": 9070,
+                            "x2": 3149,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 24,
+                                    "index": "24-0",
+                                    "iPiece": 6
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 24,
+                                    "index": "24-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 26,
+                            "x1": -1338,
+                            "y1": 13162,
+                            "x2": -1338,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 25,
+                                    "index": "25-0",
+                                    "iPiece": 6
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 25,
+                                    "index": "25-1",
+                                    "iPiece": 7
                                 }
                             ]
                         }
@@ -694,6 +798,26 @@
                             "cx": 2,
                             "cy": 3,
                             "voletstyle": 1
+                        },
+                        {
+                            "quoi": "trou",
+                            "id": 5,
+                            "nom": "",
+                            "imur": 24,
+                            "large": 800,
+                            "dcoin1": 3041.3353974858,
+                            "sorte": 111,
+                            "volet": 0,
+                            "sens": 0,
+                            "vitre": 2,
+                            "verre": 2,
+                            "haut": 2000,
+                            "hautsol": 0,
+                            "couleur": "#aaaaaa",
+                            "voletcouleur": "#ffffff",
+                            "cx": 2,
+                            "cy": 3,
+                            "voletstyle": 1
                         }
                     ],
                     "objets": [],
@@ -702,7 +826,7 @@
                         {
                             "id": 1,
                             "idpiece": 5,
-                            "nom": "Piece B",
+                            "nom": "B",
                             "nomDelta": {
                                 "X": 0,
                                 "Y": 0
@@ -716,22 +840,6 @@
                         },
                         {
                             "id": 2,
-                            "idpiece": 6,
-                            "nom": "",
-                            "nomDelta": {
-                                "X": 0,
-                                "Y": 0
-                            },
-                            "hash": "ba8afa3681e721d9483a07497c08bf66",
-                            "sorte": "",
-                            "surface": 169963325,
-                            "perimetre": 53052,
-                            "nosurface": 0,
-                            "haut": 2500,
-                            "exterieur": true
-                        },
-                        {
-                            "id": 3,
                             "idpiece": 8,
                             "nom": "",
                             "nomDelta": {
@@ -747,9 +855,9 @@
                             "exterieur": true
                         },
                         {
-                            "id": 4,
+                            "id": 3,
                             "idpiece": 9,
-                            "nom": "Piece D (C(AB))",
+                            "nom": "D",
                             "nomDelta": {
                                 "X": -1368,
                                 "Y": 5843
@@ -762,9 +870,9 @@
                             "haut": 2500
                         },
                         {
-                            "id": 5,
+                            "id": 4,
                             "idpiece": 15,
-                            "nom": "Piece A",
+                            "nom": "A",
                             "nomDelta": {
                                 "X": 0,
                                 "Y": 0
@@ -777,14 +885,14 @@
                             "haut": 2500
                         },
                         {
-                            "id": 6,
+                            "id": 5,
                             "idpiece": 20,
-                            "nom": "Piece C",
+                            "nom": "C",
                             "nomDelta": {
                                 "X": -5151,
                                 "Y": 3195
                             },
-                            "hash": "fa290d6706331716306e280d06ddf47d",
+                            "hash": "1dc96d3b947f132597ce2a0981de87ee",
                             "sorte": "",
                             "surface": 87767132,
                             "perimetre": 84842,
@@ -792,9 +900,9 @@
                             "haut": 2500
                         },
                         {
-                            "id": 7,
+                            "id": 6,
                             "idpiece": 21,
-                            "nom": "Piece E",
+                            "nom": "E",
                             "nomDelta": {
                                 "X": 0,
                                 "Y": 0
@@ -803,6 +911,37 @@
                             "sorte": "",
                             "surface": 16881100,
                             "perimetre": 16490,
+                            "nosurface": 0,
+                            "haut": 2500
+                        },
+                        {
+                            "id": 7,
+                            "idpiece": 24,
+                            "nom": "",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "fe71ef0514e1936e9b4c4986ee2a0c37",
+                            "sorte": "",
+                            "surface": 179865825,
+                            "perimetre": 58948.988187717,
+                            "nosurface": 0,
+                            "haut": 2500,
+                            "exterieur": true
+                        },
+                        {
+                            "id": 8,
+                            "idpiece": 25,
+                            "nom": "F",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "3c513917e13c8f6493c4f708d74564ab",
+                            "sorte": "",
+                            "surface": 7441680,
+                            "perimetre": 13191.490832183,
                             "nosurface": 0,
                             "haut": 2500
                         }
