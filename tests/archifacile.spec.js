@@ -45,7 +45,7 @@ describe('archifacile integration', () => {
     [4, { x1: '7259', y1: '2203', x2: '7259', y2: '803', epais: 250 }]
   ]
   describe.each(holes)(
-    'for wall %s',
+    'for hole %s',
     (wallId, desc) => {
       let line
       beforeAll(() => {

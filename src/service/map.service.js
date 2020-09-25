@@ -27,72 +27,66 @@ const toD = d3.line()
   .x((d) => d.x)
   .y((d) => d.y)
 
-for (const plan of archifacile.data.plan.plans) {
-  const rooms = [
-    {
-      id: 0,
-      exterieur: true
-    },
-    ...plan.pieces
-  ]
-  for (const room of rooms) {
-    if (room.exterieur) {
-      svg.selectAll(`line.boundary[room="${room.id}"`)
-        .attr('room', room.id + 1)
-        .attr('herited', 1)
-    } else {
-      const boundaries = []
-      const walls = []
-      svg.selectAll(`line.boundary[room="${room.id}"`)
-        .each(function () {
-          const boundary = d3.select(this)
-          boundaries.push({
-            wall: boundary.attr('wall'),
-            x1: parseInt(boundary.attr('x1'), 10),
-            y1: parseInt(boundary.attr('y1'), 10),
-            x2: parseInt(boundary.attr('x2'), 10),
-            y2: parseInt(boundary.attr('y2'), 10)
-          })
-        })
-      if (boundaries.length > 0) {
-        const paths = []
-        for (const boundary of boundaries) {
-          const path = []
-          let next = boundary
-          while (next && !next.pass) {
-            walls.push(next.wall)
-            path.push({
-              x: next.x1,
-              y: next.y1
-            },
-            {
-              x: next.x2,
-              y: next.y2
-            })
-            next.pass = true
-            next = boundaries
-              .find(b => (
-                next.x2 === b.x1 && next.y2 === b.y1
-              ))
-          }
-          if (path.length > 2) {
-            paths.push(path)
-          }
-        }
+const isNext = (a, b) => (a.x1 === b.x2 &&
+ a.y1 === b.y2)
 
-        if (paths.length > 0) {
-          const d = paths.reduce((d, path) => `${d} ${toD(path)}`, '')
-          svg.append('path')
-            .attr('d', d)
-            .attr('class', 'room')
-            .attr('id', `room${room.id}`)
-            .attr('name', room.nom)
-            .attr('walls', walls)
-            .style('stroke', getRandomColor())
-            .style('stroke-width', 100)
-            .style('fill', 'none')
+const isNextInverted = (a, b) => ((a.x1 === b.x1 &&
+ a.y1 === b.y1) || (a.x2 === b.x2 &&
+ a.y2 === b.y2))
+
+for (const plan of archifacile.data.plan.plans) {
+  for (const room of plan.pieces) {
+    const boundaries = []
+    const walls = []
+    const path = []
+    svg.selectAll(`line.boundary[room="${room.id - 1}"`)
+      .each(function () {
+        const boundary = d3.select(this)
+        boundaries.push({
+          wall: boundary.attr('wall'),
+          x1: parseInt(boundary.attr('x1'), 10),
+          y1: parseInt(boundary.attr('y1'), 10),
+          x2: parseInt(boundary.attr('x2'), 10),
+          y2: parseInt(boundary.attr('y2'), 10)
+        })
+      })
+    let current = boundaries[0]
+    while (current && !walls.includes(current.wall)) {
+      walls.push(current.wall)
+      path.push({
+        x: current.x1,
+        y: current.y1
+      },
+      {
+        x: current.x2,
+        y: current.y2
+      })
+      let next = boundaries.find(e => isNext(e, current))
+      if (!next) {
+        next = boundaries.find(e => isNextInverted(e, current) && !walls.includes(e.wall))
+        if (next) {
+          boundaries.push({
+            wall: next.wall,
+            x1: next.x2,
+            y1: next.y2,
+            x2: next.x1,
+            y2: next.y1
+          })
         }
       }
+      current = next
+    }
+
+    if (!room.exterieur) {
+      svg.append('path')
+        .attr('class', 'room')
+        .attr('id', `room${room.id}`)
+        .attr('name', room.nom)
+        .attr('walls', walls)
+        .attr('d', toD(path))
+        .style('stroke', getRandomColor())
+        .style('stroke-width', 100)
+        .style('fill', 'none')
     }
   }
 }
