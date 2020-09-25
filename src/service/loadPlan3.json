@@ -1,0 +1,876 @@
+{
+    "code": 200,
+    "message": "OK",
+    "data": {
+        "plan": {
+            "info": {
+                "titre": "123456",
+                "partage": "utilisation",
+                "cle": "aea591ac94f6a134",
+                "planIdx": 0,
+                "description": "",
+                "tags": [
+                    "Plan d'appartement"
+                ],
+                "lg": "fr",
+                "version": "32.9 web",
+                "modification": {
+                    "login": "123456",
+                    "cle": "2e9c6c5eab0194a3",
+                    "date": "2020-09-25 17:36:47"
+                },
+                "creation": {
+                    "login": "123456",
+                    "cle": "2e9c6c5eab0194a3",
+                    "date": "2020-09-17 20:31:23"
+                },
+                "planid": "fe645e002892cf198a12d412215ff79f"
+            },
+            "affichage": {
+                "x0": 144.48924444444,
+                "y0": -25.2268,
+                "zx": 0.046005119909369,
+                "zy": 0.046005119909369
+            },
+            "plans": [
+                {
+                    "nom": "Rez de chauss\u00e9e",
+                    "sorte": "2D",
+                    "etage": 0,
+                    "dalle": 200,
+                    "haut": 2500,
+                    "param": {},
+                    "murs": [
+                        {
+                            "quoi": "mur",
+                            "id": 1,
+                            "x1": 0,
+                            "y1": 0,
+                            "x2": 7259,
+                            "y2": 0,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 0,
+                                    "index": "0-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 0,
+                                    "index": "0-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 2,
+                            "x1": 7259,
+                            "y1": 3036,
+                            "x2": 7259,
+                            "y2": 5035,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 1,
+                                    "index": "1-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 1,
+                                    "index": "1-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 3,
+                            "x1": 4727,
+                            "y1": 5035,
+                            "x2": 0,
+                            "y2": 5035,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 2,
+                                    "index": "2-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 2,
+                                    "index": "2-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 4,
+                            "x1": 0,
+                            "y1": 5035,
+                            "x2": 0,
+                            "y2": 0,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 3,
+                                    "index": "3-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 3,
+                                    "index": "3-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 5,
+                            "x1": 7259,
+                            "y1": 0,
+                            "x2": 10357,
+                            "y2": 0,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 4,
+                                    "index": "4-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 4,
+                                    "index": "4-1",
+                                    "iPiece": 0
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 6,
+                            "x1": 10357,
+                            "y1": 0,
+                            "x2": 10357,
+                            "y2": 3036,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 5,
+                                    "index": "5-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 5,
+                                    "index": "5-1",
+                                    "iPiece": 0
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 7,
+                            "x1": 10357,
+                            "y1": 3036,
+                            "x2": 7259,
+                            "y2": 3036,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 6,
+                                    "index": "6-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 6,
+                                    "index": "6-1",
+                                    "iPiece": 0
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 8,
+                            "x1": 7259,
+                            "y1": 0,
+                            "x2": 7259,
+                            "y2": 3036,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 7,
+                                    "index": "7-0",
+                                    "iPiece": 0
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 7,
+                                    "index": "7-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 9,
+                            "x1": -2403,
+                            "y1": -1505,
+                            "x2": 13048,
+                            "y2": -1505,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 8,
+                                    "index": "8-0",
+                                    "iPiece": 1
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 8,
+                                    "index": "8-1",
+                                    "iPiece": 5
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 10,
+                            "x1": 13048,
+                            "y1": -1505,
+                            "x2": 13048,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 9,
+                                    "index": "9-0",
+                                    "iPiece": 1
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 9,
+                                    "index": "9-1",
+                                    "iPiece": 5
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 11,
+                            "x1": 4727,
+                            "y1": 9070,
+                            "x2": -2403,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 10,
+                                    "index": "10-0",
+                                    "iPiece": 1
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 10,
+                                    "index": "10-1",
+                                    "iPiece": 5
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 12,
+                            "x1": -2403,
+                            "y1": 9070,
+                            "x2": -2403,
+                            "y2": -1505,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 11,
+                                    "index": "11-0",
+                                    "iPiece": 1
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 11,
+                                    "index": "11-1",
+                                    "iPiece": 5
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 13,
+                            "x1": -3418,
+                            "y1": -2872,
+                            "x2": 15966,
+                            "y2": -2872,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 12,
+                                    "index": "12-0",
+                                    "iPiece": 2
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 12,
+                                    "index": "12-1",
+                                    "iPiece": 3
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 14,
+                            "x1": 15966,
+                            "y1": -2872,
+                            "x2": 15966,
+                            "y2": 14880,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 13,
+                                    "index": "13-0",
+                                    "iPiece": 2
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 13,
+                                    "index": "13-1",
+                                    "iPiece": 3
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 15,
+                            "x1": 15966,
+                            "y1": 14880,
+                            "x2": -3418,
+                            "y2": 14880,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 14,
+                                    "index": "14-0",
+                                    "iPiece": 2
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 14,
+                                    "index": "14-1",
+                                    "iPiece": 3
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 16,
+                            "x1": -3418,
+                            "y1": 14880,
+                            "x2": -3418,
+                            "y2": -2872,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 15,
+                                    "index": "15-0",
+                                    "iPiece": 2
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 15,
+                                    "index": "15-1",
+                                    "iPiece": 3
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 17,
+                            "x1": 7259,
+                            "y1": 5035,
+                            "x2": 9437,
+                            "y2": 5035,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 16,
+                                    "index": "16-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 16,
+                                    "index": "16-1",
+                                    "iPiece": 6
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 18,
+                            "x1": 9437,
+                            "y1": 5035,
+                            "x2": 9437,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 17,
+                                    "index": "17-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 17,
+                                    "index": "17-1",
+                                    "iPiece": 6
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 19,
+                            "x1": 9437,
+                            "y1": 9070,
+                            "x2": 4727,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 18,
+                                    "index": "18-0",
+                                    "iPiece": 1
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 18,
+                                    "index": "18-1",
+                                    "iPiece": 6
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 20,
+                            "x1": 4727,
+                            "y1": 9070,
+                            "x2": 4727,
+                            "y2": 5035,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 19,
+                                    "index": "19-0",
+                                    "iPiece": 5
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 19,
+                                    "index": "19-1",
+                                    "iPiece": 6
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 21,
+                            "x1": 7259,
+                            "y1": 5035,
+                            "x2": 4727,
+                            "y2": 5035,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 20,
+                                    "index": "20-0",
+                                    "iPiece": 6
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 20,
+                                    "index": "20-1",
+                                    "iPiece": 4
+                                }
+                            ]
+                        },
+                        {
+                            "quoi": "mur",
+                            "id": 22,
+                            "x1": 13048,
+                            "y1": 9070,
+                            "x2": 9437,
+                            "y2": 9070,
+                            "epais": 250,
+                            "decale": 0,
+                            "cote": [
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 0,
+                                    "iMur": 21,
+                                    "index": "21-0",
+                                    "iPiece": 1
+                                },
+                                {
+                                    "quoi": "murcote",
+                                    "iCote": 1,
+                                    "iMur": 21,
+                                    "index": "21-1",
+                                    "iPiece": 5
+                                }
+                            ]
+                        }
+                    ],
+                    "trous": [
+                        {
+                            "quoi": "trou",
+                            "id": 1,
+                            "nom": "",
+                            "imur": 3,
+                            "large": 800,
+                            "dcoin1": 1382,
+                            "sorte": 111,
+                            "volet": 0,
+                            "sens": 0,
+                            "vitre": 2,
+                            "verre": 2,
+                            "haut": 2000,
+                            "hautsol": 0,
+                            "couleur": "#aaaaaa",
+                            "voletcouleur": "#ffffff",
+                            "cx": 2,
+                            "cy": 3,
+                            "voletstyle": 1
+                        },
+                        {
+                            "quoi": "trou",
+                            "id": 2,
+                            "nom": "",
+                            "imur": 14,
+                            "large": 800,
+                            "dcoin1": 16631,
+                            "sorte": 111,
+                            "volet": 0,
+                            "sens": 0,
+                            "vitre": 2,
+                            "verre": 2,
+                            "haut": 2000,
+                            "hautsol": 0,
+                            "couleur": "#aaaaaa",
+                            "voletcouleur": "#ffffff",
+                            "cx": 2,
+                            "cy": 3,
+                            "voletstyle": 1
+                        },
+                        {
+                            "quoi": "trou",
+                            "id": 3,
+                            "nom": "",
+                            "imur": 10,
+                            "large": 800,
+                            "dcoin1": 7338,
+                            "sorte": 110,
+                            "volet": 0,
+                            "sens": 0,
+                            "vitre": 2,
+                            "verre": 2,
+                            "haut": 2000,
+                            "hautsol": 0,
+                            "couleur": "#aaaaaa",
+                            "voletcouleur": "#ffffff",
+                            "cx": 2,
+                            "cy": 3,
+                            "voletstyle": 1
+                        },
+                        {
+                            "quoi": "trou",
+                            "id": 4,
+                            "nom": "",
+                            "imur": 8,
+                            "large": 1400,
+                            "dcoin1": 1503,
+                            "sorte": 130,
+                            "volet": 0,
+                            "sens": 0,
+                            "vitre": 2,
+                            "verre": 2,
+                            "haut": 2000,
+                            "hautsol": 0,
+                            "couleur": "#aaaaaa",
+                            "voletcouleur": "#ffffff",
+                            "cx": 2,
+                            "cy": 3,
+                            "voletstyle": 1
+                        }
+                    ],
+                    "objets": [],
+                    "cotations": [],
+                    "pieces": [
+                        {
+                            "id": 1,
+                            "idpiece": 5,
+                            "nom": "Piece B",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "a396bdec9253f835d601220dff17bc1a",
+                            "sorte": "",
+                            "surface": 7934528,
+                            "perimetre": 11268,
+                            "nosurface": 0,
+                            "haut": 2500
+                        },
+                        {
+                            "id": 2,
+                            "idpiece": 6,
+                            "nom": "",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "ba8afa3681e721d9483a07497c08bf66",
+                            "sorte": "",
+                            "surface": 169963325,
+                            "perimetre": 53052,
+                            "nosurface": 0,
+                            "haut": 2500,
+                            "exterieur": true
+                        },
+                        {
+                            "id": 3,
+                            "idpiece": 8,
+                            "nom": "",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "68f0c4b70e509d5fdde0a9feee0b7e8a",
+                            "sorte": "",
+                            "surface": 353451268,
+                            "perimetre": 75272,
+                            "nosurface": 0,
+                            "haut": 2500,
+                            "exterieur": true
+                        },
+                        {
+                            "id": 4,
+                            "idpiece": 9,
+                            "nom": "Piece D (C(AB))",
+                            "nomDelta": {
+                                "X": -1368,
+                                "Y": 5843
+                            },
+                            "hash": "269141f9bbed7ff1e3a85bb28b2421ee",
+                            "sorte": "",
+                            "surface": 334883268,
+                            "perimetre": 73272,
+                            "nosurface": 0,
+                            "haut": 2500
+                        },
+                        {
+                            "id": 5,
+                            "idpiece": 15,
+                            "nom": "Piece A",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "b868fb414095a1d1d55364d99d708e85",
+                            "sorte": "",
+                            "surface": 33538065,
+                            "perimetre": 23588,
+                            "nosurface": 0,
+                            "haut": 2500
+                        },
+                        {
+                            "id": 6,
+                            "idpiece": 20,
+                            "nom": "Piece C",
+                            "nomDelta": {
+                                "X": -5151,
+                                "Y": 3195
+                            },
+                            "hash": "fa290d6706331716306e280d06ddf47d",
+                            "sorte": "",
+                            "surface": 87767132,
+                            "perimetre": 84842,
+                            "nosurface": 0,
+                            "haut": 2500
+                        },
+                        {
+                            "id": 7,
+                            "idpiece": 21,
+                            "nom": "Piece E",
+                            "nomDelta": {
+                                "X": 0,
+                                "Y": 0
+                            },
+                            "hash": "a011fc3664feb7463961ea857e8f134e",
+                            "sorte": "",
+                            "surface": 16881100,
+                            "perimetre": 16490,
+                            "nosurface": 0,
+                            "haut": 2500
+                        }
+                    ],
+                    "fond": {},
+                    "outil": {}
+                }
+            ],
+            "calques": {
+                "batiment": {
+                    "code": "batiment",
+                    "nom": "Batiments",
+                    "visible": true,
+                    "editable": true
+                },
+                "cotation": {
+                    "code": "cotation",
+                    "nom": "Cotations",
+                    "visible": true,
+                    "editable": true
+                },
+                "objet": {
+                    "code": "objet",
+                    "nom": "Objets",
+                    "visible": true,
+                    "editable": true
+                }
+            },
+            "options": {
+                "draw": {
+                    "grilleVisible": true,
+                    "dimensionVisible": false,
+                    "pieceVisible": true,
+                    "pieceCouleur": true,
+                    "surfacePieceVisible": true,
+                    "hauteurPieceVisible": false,
+                    "echelleVisible": true,
+                    "objetVisible": true,
+                    "objetNoirBlanc": false,
+                    "cotationVisible": true,
+                    "cotationObjetDim": true,
+                    "cotationObjetPos": true,
+                    "cotationAutoTrait": true,
+                    "cotationPieces": false,
+                    "cotationExterieurs": false,
+                    "cotationSansUnite": false,
+                    "anglePieces": true,
+                    "palette": false,
+                    "textSize": 1,
+                    "precisMM": false,
+                    "cotationDistanceExterieur": 600,
+                    "cotationDistance": 300,
+                    "cotationSize": 1,
+                    "cotationTextSize": 1,
+                    "nomousewheel": false,
+                    "etageInferieur": true,
+                    "facadeVisible": false,
+                    "electricite": false,
+                    "panelAide": true,
+                    "calques": false,
+                    "cotationStr": 0,
+                    "cotationReel": false,
+                    "cotationsPieceDiagonale": false,
+                    "telemetre": false,
+                    "diagnostic": true,
+                    "optimize": false
+                }
+            }
+        }
+    }
+}

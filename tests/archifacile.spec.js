@@ -1,5 +1,5 @@
 const mapService = require('../src/service/map.service')
-const archifacile = require('../src/service/loadPlan2.json')
+const archifacile = require('../src/service/loadPlan3.json')
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
 const d3 = require('d3')
@@ -70,10 +70,11 @@ describe('archifacile integration', () => {
   )
 
   const rooms = [
-    ['B', { id: 1, walls: [5, 6, 7, 8] }],
-    ['D', { id: 4, walls: [13, 14, 15, 16] }],
-    ['A', { id: 5, walls: [1, 8, 2, 3, 4] }],
-    ['C', { id: 7, walls: [9, 10, 11, 12] }]
+    ['B', { id: 1, walls: '5,6,7,8' }],
+    ['D', { id: 4, walls: '13,14,15,16' }],
+    ['A', { id: 5, walls: '1,8,2,21,3,4' }],
+    ['E', { id: 7, walls: '17,18,19,20,21' }],
+    ['C', { id: 6, walls: '1,5,6,7,2,17,18,22,10,9,12,11,20,3,4' }]
   ]
 
   describe.each(rooms)(
@@ -90,8 +91,7 @@ describe('archifacile integration', () => {
       })
 
       it('should set walls with his walls', () => {
-        const walls = path.attr('walls').split(',')
-        expect(walls).toEqual(desc.walls.map(e => `${e}`))
+        expect(path.attr('walls')).toEqual(desc.walls)
       })
     }
   )

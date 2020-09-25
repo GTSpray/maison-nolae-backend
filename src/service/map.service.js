@@ -1,4 +1,4 @@
-var archifacile = require('./loadPlan2.json')
+var archifacile = require('./loadPlan3.json')
 
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
@@ -22,80 +22,89 @@ const svg = body.append('svg').attr('xmlns', 'http://www.w3.org/2000/svg')
 const { minX, minY, maxX, maxY } = parseWall(archifacile, svg)
 
 parseHole(archifacile, svg)
-
-const toD = d3.line()
-  .x((d) => d.x)
-  .y((d) => d.y)
-
-const isNext = (a, b) => (a.x1 === b.x2 &&
- a.y1 === b.y2)
-
-const isNextInverted = (a, b) => ((a.x1 === b.x1 &&
- a.y1 === b.y1) || (a.x2 === b.x2 &&
- a.y2 === b.y2))
-
-for (const plan of archifacile.data.plan.plans) {
-  for (const room of plan.pieces) {
-    const boundaries = []
-    const walls = []
-    const path = []
-    svg.selectAll(`line.boundary[room="${room.id - 1}"`)
-      .each(function () {
-        const boundary = d3.select(this)
-        boundaries.push({
-          wall: boundary.attr('wall'),
-          x1: parseInt(boundary.attr('x1'), 10),
-          y1: parseInt(boundary.attr('y1'), 10),
-          x2: parseInt(boundary.attr('x2'), 10),
-          y2: parseInt(boundary.attr('y2'), 10)
-        })
-      })
-    let current = boundaries[0]
-    while (current && !walls.includes(current.wall)) {
-      walls.push(current.wall)
-      path.push({
-        x: current.x1,
-        y: current.y1
-      },
-      {
-        x: current.x2,
-        y: current.y2
-      })
-      let next = boundaries.find(e => isNext(e, current))
-      if (!next) {
-        next = boundaries.find(e => isNextInverted(e, current) && !walls.includes(e.wall))
-        if (next) {
-          boundaries.push({
-            wall: next.wall,
-            x1: next.x2,
-            y1: next.y2,
-            x2: next.x1,
-            y2: next.y1
-          })
-        }
-      }
-      current = next
-    }
-
-    if (!room.exterieur) {
-      svg.append('path')
-        .attr('class', 'room')
-        .attr('id', `room${room.id}`)
-        .attr('name', room.nom)
-        .attr('walls', walls)
-        .attr('d', toD(path))
-        .style('stroke', getRandomColor())
-        .style('stroke-width', 100)
-        .style('fill', 'none')
-    }
-  }
-}
+parseRooms(archifacile, svg)
 
 svg.style('maw-width', '100%')
 svg.style('maw-height', '100%')
 svg.attr('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`)
 
+function parseRooms (houseDescription, svg) {
+  const toD = d3.line()
+    .x((d) => d.x)
+    .y((d) => d.y)
+
+  const isNext = (a, b) => (a.wall !== b.wall && (a.x1 === b.x2 &&
+ a.y1 === b.y2))
+
+  const isNextInverted = (a, b) => a.wall !== b.wall && ((a.x1 === b.x1 &&
+ a.y1 === b.y1) || (a.x2 === b.x2 &&
+ a.y2 === b.y2))
+
+  for (const plan of houseDescription.data.plan.plans) {
+    const g = svg.append('g').attr('id', 'rooms')
+    for (const room of plan.pieces) {
+      const boundaries = []
+      const walls = []
+      const path = []
+      svg.selectAll(`line.boundary[room="${room.id - 1}"`)
+        .each(function () {
+          const boundary = d3.select(this)
+          boundaries.push({
+            pass: 0,
+            wall: boundary.attr('wall'),
+            x1: parseInt(boundary.attr('x1'), 10),
+            y1: parseInt(boundary.attr('y1'), 10),
+            x2: parseInt(boundary.attr('x2'), 10),
+            y2: parseInt(boundary.attr('y2'), 10)
+          })
+        })
+
+      let current = boundaries[0]
+      while (current && current.pass < 1) {
+        current.pass += 1
+        walls.push(current.wall)
+        path.push({
+          x: current.x1,
+          y: current.y1
+        },
+        {
+          x: current.x2,
+          y: current.y2
+        })
+        let next = boundaries.find(e => isNext(e, current))
+        if (!next) {
+          next = boundaries.find(e => isNextInverted(e, current) && !walls.includes(e.wall))
+          if (next) {
+            next = {
+              wall: next.wall,
+              pass: 0,
+              x1: next.x2,
+              y1: next.y2,
+              x2: next.x1,
+              y2: next.y1
+            }
+          }
+        }
+        current = next
+      }
+
+      if (!room.exterieur) {
+        g.append('path')
+          .attr('class', 'room')
+          .attr('id', `room${room.id}`)
+          .attr('name', room.nom)
+          .attr('walls', walls)
+          .attr('d', toD(path))
+          .style('stroke', getRandomColor())
+          .style('stroke-width', 100)
+          .style('fill', 'none')
+      }
+    }
+  }
+}
+
 function parseHole (houseDescription, svg) {
+  const g = svg.append('g').attr('id', 'holes')
   for (const plan of houseDescription.data.plan.plans) {
     for (const hole of plan.trous) {
       const wall = svg.select(`#wall${hole.imur}`)
@@ -109,7 +118,7 @@ function parseHole (houseDescription, svg) {
       const x2 = x1 + cos * hole.large
       const y2 = y1 + sin * hole.large
 
-      svg
+      g
         .append('line')
         .attr('id', `hole${hole.id}`)
         .attr('x1', Math.round(x1))
