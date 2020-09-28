@@ -96,14 +96,14 @@ function parseMap (mapDescription) {
     const g = svg.append('g').attr('id', 'holes')
     for (const plan of houseDescription.data.plan.plans) {
       for (const hole of plan.trous) {
-        const wall = svg.select(`#wall${hole.imur}`)
+        const wall = plan.murs.find(m => m.id === hole.imur)
 
-        const direction = parseFloat(wall.attr('direction'))
+        const direction = Math.atan2(wall.y1 - wall.y2, wall.x1 - wall.x2)
         const cos = Math.cos(direction)
         const sin = Math.sin(direction)
 
-        const x1 = parseInt(wall.attr('x1'), 10) - cos * (hole.dcoin1 + hole.large / 2)
-        const y1 = parseInt(wall.attr('y1'), 10) - sin * (hole.dcoin1 + hole.large / 2)
+        const x1 = wall.x1 - cos * (hole.dcoin1 + hole.large / 2)
+        const y1 = wall.y1 - sin * (hole.dcoin1 + hole.large / 2)
         const x2 = x1 + cos * hole.large
         const y2 = y1 + sin * hole.large
 
@@ -114,7 +114,7 @@ function parseMap (mapDescription) {
           .attr('y1', Math.round(y1))
           .attr('x2', Math.round(x2))
           .attr('y2', Math.round(y2))
-          .style('stroke-width', wall.style('stroke-width'))
+          .style('stroke-width', wall.epais)
           .style('stroke', 'blue')
       }
     }
@@ -141,7 +141,6 @@ function parseMap (mapDescription) {
           .attr('y1', wall.y1)
           .attr('x2', wall.x2)
           .attr('y2', wall.y2)
-          .attr('direction', Math.atan2(wall.y1 - wall.y2, wall.x1 - wall.x2))
           .attr('class', 'wall')
           .style('stroke-width', wall.epais)
           .style('stroke', color)
