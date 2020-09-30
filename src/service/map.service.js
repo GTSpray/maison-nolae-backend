@@ -3,6 +3,87 @@ const { JSDOM } = jsdom
 
 const d3 = require('d3')
 
+class Path {
+  constructor (walls) {
+    const sort = walls.sort((a, b) => {
+      if (a.p1 === b.p2) {
+        a.resolved = b.resolved = true
+        return 1
+      } else if (a.p2 === b.p1) {
+        a.resolved = b.resolved = true
+        return -1
+      }
+      return 1
+    })
+
+    this.walls = sort.filter(e => e.resolved)
+    this.unresolved = sort.filter(e => !e.resolved)
+  }
+
+  set (wall) {
+    const isNext = (a, b) => (a.wall !== b.wall && a.p1 === b.p2)
+    let i = this.walls.findIndex(w => isNext(w, wall))
+    if (i !== -1) {
+      this.walls.splice(i, 0, wall)
+      return true
+    }
+
+    i = this.walls.findIndex(w => isNext(wall, w))
+    if (i !== -1) {
+      const next = this.walls[i]
+      this.walls.splice(i, 1, wall, next)
+      return true
+    }
+    return false
+  }
+
+  resolve () {
+    const invertAttr = (a, attr1, attr2) => {
+      const v1 = a[attr1]
+      const v2 = a[attr2]
+
+      a[attr1] = v2
+      a[attr2] = v1
+    }
+    const invert = (w) => {
+      invertAttr(w, 'x1', 'x2')
+      invertAttr(w, 'y1', 'y2')
+      invertAttr(w, 'p1', 'p2')
+    }
+    for (let i = 0; i < this.unresolved.length; i++) {
+      const unresolved = this.unresolved[i]
+      invert(unresolved)
+      if (this.set(unresolved)) {
+        this.unresolved.splice(i, 1)
+      } else {
+        invert(unresolved)
+      }
+    }
+
+    this.walls = this.walls.sort((a, b) => {
+      if (a.p1 === b.p2) {
+        a.resolved = b.resolved = true
+        return 1
+      } else if (a.p2 === b.p1) {
+        a.resolved = b.resolved = true
+        return -1
+      }
+      return 1
+    })
+  }
+
+  getPath () {
+    const path = []
+    for (const w of this.walls) {
+      path.push(
+        { x: w.x1, y: w.y1 },
+        { x: w.x2, y: w.y2 }
+      )
+    }
+    return path
+  }
+}
+
 function parseMap (mapDescription) {
   function getRandomColor (alpha) {
     const a = alpha || 1
@@ -33,9 +114,6 @@ function parseMap (mapDescription) {
     for (const plan of houseDescription.data.plan.plans) {
       const g = svg.append('g').attr('id', 'rooms')
       for (const room of plan.pieces) {
-        const walls = []
-        const path = []
-
         const iPiece = room.id - 1
         const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
           .map(e => ({
@@ -49,15 +127,6 @@ function parseMap (mapDescription) {
         let current = boundaries[0]
         while (current && !current.pass) {
           current.pass = true
-          walls.push(current.id)
-          path.push({
-            x: current.x1,
-            y: current.y1
-          },
-          {
-            x: current.x2,
-            y: current.y2
-          })
           let next = boundaries.find(e => !e.pass && isNext(e, current))
           if (!next) {
             next = boundaries.find(e => !e.pass && isNextInverted(e, current))
@@ -70,19 +139,17 @@ function parseMap (mapDescription) {
           current = next
         }
 
-        if (room.id === 3) {
-          console.log('%o', walls)
-          console.log('%s => %o', room.nom, boundaries)
-        }
+        const p = new Path(boundaries)
+        p.resolve()
 
         if (!room.exterieur) {
           g.append('path')
             .attr('class', 'room')
             .attr('id', `room${room.id}`)
             .attr('name', room.nom)
-            .attr('walls', walls)
+            .attr('walls', p.walls.map(e => e.id))
             .attr('title', room.nom)
-            .attr('d', toD(path))
+            .attr('d', toD(p.getPath()))
             .style('stroke', getRandomColor())
             .style('stroke-width', 100)
             .style('fill', getRandomColor(0.3))
