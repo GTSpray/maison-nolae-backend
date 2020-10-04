@@ -5,71 +5,62 @@ const d3 = require('d3')
 
 class Path {
   constructor (walls) {
-    const sort = walls.sort((a, b) => {
-      if (a.p1 === b.p2) {
-        a.resolved = b.resolved = true
-        return 1
-      } else if (a.p2 === b.p1) {
-        a.resolved = b.resolved = true
-        return -1
-      }
-      return 1
-    })
-
-    this.walls = sort.filter(e => e.resolved)
-    this.unresolved = sort.filter(e => !e.resolved)
+    this.walls = []
+    this.unresolved = [...walls]
   }
 
-  set (wall) {
-    const isNext = (a, b) => (a.wall !== b.wall && a.p1 === b.p2)
-    let i = this.walls.findIndex(w => isNext(w, wall))
-    if (i !== -1) {
-      this.walls.splice(i, 0, wall)
-      return true
-    }
+  isNext (a, b) {
+    return (a.wall !== b.wall && a.p1 === b.p2)
+  }
 
-    i = this.walls.findIndex(w => isNext(wall, w))
-    if (i !== -1) {
-      const next = this.walls[i]
-      this.walls.splice(i, 1, wall, next)
-      return true
-    }
-    return false
+  isPrev (a, b) {
+    return this.isNext(b, a)
   }
 
   resolve () {
-    const invertAttr = (a, attr1, attr2) => {
-      const v1 = a[attr1]
-      const v2 = a[attr2]
-
-      a[attr1] = v2
-      a[attr2] = v1
-    }
     const invert = (w) => {
+      const invertAttr = (a, attr1, attr2) => {
+        const v1 = a[attr1]
+        const v2 = a[attr2]
+        a[attr1] = v2
+        a[attr2] = v1
+      }
+
       invertAttr(w, 'x1', 'x2')
       invertAttr(w, 'y1', 'y2')
       invertAttr(w, 'p1', 'p2')
-    }
-    for (let i = 0; i < this.unresolved.length; i++) {
-      const unresolved = this.unresolved[i]
-      invert(unresolved)
-      if (this.set(unresolved)) {
-        this.unresolved.splice(i, 1)
-      } else {
-        invert(unresolved)
-      }
+      return w
     }
 
-    this.walls = this.walls.sort((a, b) => {
-      if (a.p1 === b.p2) {
-        a.resolved = b.resolved = true
-        return 1
-      } else if (a.p2 === b.p1) {
-        a.resolved = b.resolved = true
-        return -1
+    this.unresolved.filter(inverted => (
+      !this.unresolved.some(w => this.isNext(w, inverted)) &&
+      !this.unresolved.some(w => this.isPrev(w, inverted))
+    )).forEach(invert)
+
+    const path = []
+    const unresolveds = [...this.unresolved, ...this.unresolved.reverse()]
+
+    let current
+    do {
+      current = unresolveds.splice(0, 1)[0]
+      if (current && !current.resolved) {
+        const iNext = unresolveds.findIndex(w => this.isNext(w, current))
+        if (iNext !== -1) {
+          current.resolved = true
+          path.push(current)
+          unresolveds.splice(0, 1, unresolveds[iNext])
+        } else if (path.length > 0 && this.isPrev(current, path[path.length - 1])) {
+          current.resolved = true
+          path.push(current)
+        }
       }
-      return 1
-    })
+    } while (current)
+
+    this.unresolved = this.unresolved.filter(e => !e.resolved)
+
+    if (path.length > this.walls.length) {
+      this.walls = path
+    }
   }
 
   getPath () {
@@ -99,50 +90,22 @@ function parseMap (mapDescription) {
       .x((d) => d.x)
       .y((d) => d.y)
 
-    const isNext = (a, b) => (a.wall !== b.wall && a.p1 === b.p2)
-
-    const isNextInverted = (a, b) => a.wall !== b.wall && ((a.p1 === b.p1) || (a.p2 === b.p2))
-
-    const invert = (a, attr1, attr2) => {
-      const v1 = a[attr1]
-      const v2 = a[attr2]
-
-      a[attr1] = v2
-      a[attr2] = v1
-    }
-
     for (const plan of houseDescription.data.plan.plans) {
       const g = svg.append('g').attr('id', 'rooms')
       for (const room of plan.pieces) {
-        const iPiece = room.id - 1
-        const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
-          .map(e => ({
-            wall: e.id,
-            pass: false,
-            p1: `x:${e.x1} y:${e.y1}`,
-            p2: `x:${e.x2} y:${e.y2}`,
-            ...e
-          }))
-
-        let current = boundaries[0]
-        while (current && !current.pass) {
-          current.pass = true
-          let next = boundaries.find(e => !e.pass && isNext(e, current))
-          if (!next) {
-            next = boundaries.find(e => !e.pass && isNextInverted(e, current))
-            if (next) {
-              invert(next, 'x1', 'x2')
-              invert(next, 'y1', 'y2')
-              invert(next, 'p1', 'p2')
-            }
-          }
-          current = next
-        }
-
-        const p = new Path(boundaries)
-        p.resolve()
-
         if (!room.exterieur) {
+          const iPiece = room.id - 1
+          const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
+            .map(e => ({
+              wall: e.id,
+              p1: `x:${e.x1} y:${e.y1}`,
+              p2: `x:${e.x2} y:${e.y2}`,
+              ...e
+            }))
+
+          const p = new Path(boundaries)
+          p.resolve()
+
           g.append('path')
             .attr('class', 'room')
             .attr('id', `room${room.id}`)
@@ -240,5 +203,6 @@ function parseMap (mapDescription) {
 }
 
 module.exports = {
-  getMap: (mapDescription) => parseMap(mapDescription).html()
+  getMap: (mapDescription) => parseMap(mapDescription).html(),
+  Path
 }
