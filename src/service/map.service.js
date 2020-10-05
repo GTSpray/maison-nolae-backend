@@ -32,10 +32,20 @@ class Path {
       return w
     }
 
-    this.unresolved.filter(inverted => (
-      !this.unresolved.some(w => this.isNext(w, inverted)) &&
-      !this.unresolved.some(w => this.isPrev(w, inverted))
-    )).forEach(invert)
+    let r
+    do {
+      r = this.unresolved.reduce((acc, inverted) => {
+        if (
+          (!this.unresolved.some(w => this.isNext(w, inverted)) &&
+          !this.unresolved.some(w => this.isPrev(w, inverted))) ||
+          this.unresolved.some(w => w.wall !== inverted.wall && w.p1 === inverted.p1)
+        ) {
+          invert(inverted)
+          acc += 1
+        }
+        return acc
+      }, 0)
+    } while (r > 0)
 
     const path = []
     const unresolveds = [...this.unresolved, ...this.unresolved.reverse()]

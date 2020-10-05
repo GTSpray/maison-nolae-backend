@@ -24,7 +24,9 @@ function perm (xs) {
 
 expect.extend({
   matchOrder (received, expected) {
-    const pass = (expected.split(',')).length === (received.split(',')).length && `${received},${received}`.search(expected) !== -1
+    const n = `${received},${received}`
+    const pass = (expected.split(',')).length === (received.split(',')).length &&
+    (n.search(expected) !== -1 || n.search((expected.split(',').reverse()).join(',')) !== -1)
     return {
       pass,
       message: () => pass ? '' : `expected ${received} to match with order ${expected}`
@@ -60,6 +62,8 @@ describe('archifacile integration', () => {
       ...e
     }))
 
+    const iWalls = wallList.map((_e, i) => i)
+    const expectedOrder = wallList.map((e) => e.wall).join(',')
     const permutations = perm(wallList.map(e => e.wall)).map(e => e.join(','))
 
     describe.each(permutations)(
@@ -75,20 +79,37 @@ describe('archifacile integration', () => {
         it('should resolve simple path', () => {
           const path = new mapService.Path(walls)
           path.resolve()
-          expect(path.walls.map(e => e.wall).join(',')).matchOrder('1,2,3,4')
+          const wallOrder = path.walls.map(e => e.wall).join(',')
+          expect(wallOrder).matchOrder(expectedOrder)
         })
 
-        it.each(wallList.map((_e, i) => i))('should resolve path with %s inversed wall', (iWall) => {
-          invertWall(walls[iWall])
-          const path = new mapService.Path(walls)
-          path.resolve()
-          expect(path.walls.map(e => e.wall).join(',')).matchOrder('1,2,3,4')
+        describe('with inversed walls', () => {
+          describe.each(iWalls)('%s has inversed wall', (iWall) => {
+            beforeEach(() => invertWall(walls[iWall]))
+
+            it(`should resolve path only ${iWall}`, () => {
+              const path = new mapService.Path(walls)
+              path.resolve()
+              const wallOrder = path.walls.map(e => e.wall).join(',')
+              expect(wallOrder).matchOrder(expectedOrder)
+            })
+
+            it.each(
+              iWalls.filter(e => e !== iWall)
+            )(`should resolve path with ${iWall} and %s`, (inWall) => {
+              invertWall(walls[inWall])
+              const path = new mapService.Path(walls)
+              path.resolve()
+              const wallOrder = path.walls.map(e => e.wall).join(',')
+              expect(wallOrder).matchOrder(expectedOrder)
+            })
+          })
         })
       }
     )
   })
 
-  describe.skip('testing plan', () => {
+  describe('testing plan', () => {
     const dom = new JSDOM(mapService.getMap(archifacile))
     const map = d3.select(dom.window.document.querySelector('svg'))
 
@@ -182,13 +203,13 @@ describe('archifacile integration', () => {
         })
 
         it('should set walls with his walls', () => {
-          expect(path.attr('walls')).toEqual(desc.walls)
+          expect(path.attr('walls')).matchOrder(desc.walls)
         })
       }
     )
   })
 
-  describe.skip('Nolae\'s house', () => {
+  describe('Nolae\'s house', () => {
     const dom = new JSDOM(mapService.getMap(nolaeHouse))
     const map = d3.select(dom.window.document.querySelector('svg'))
 
@@ -228,7 +249,7 @@ describe('archifacile integration', () => {
 
     const holes = [
       [1, { x1: 647, y1: 2055, x2: 1447, y2: 2052, epais: 250 }],
-      [2, { x1: -1381, y1: 2061, x2: -881, y2: 2059, epais: 250 }],
+      [2, { x1: -1381, y1: 2061, x2: -881, y2: 2060, epais: 250 }],
       [3, { x1: 3235, y1: 2047, x2: 3735, y2: 2045, epais: 250 }],
       [4, { x1: 3390, y1: -2288, x2: 2590, y2: -2288, epais: 250 }],
       [5, { x1: -7694, y1: -2390, x2: -7694, y2: -2790, epais: 250 }],
@@ -254,7 +275,7 @@ describe('archifacile integration', () => {
       [25, { x1: -6970, y1: -3065, x2: -6970, y2: -3465, epais: 250 }],
       [26, { x1: -7694, y1: -1205, x2: -7694, y2: -805, epais: 250 }],
       [27, { x1: -7126, y1: -4223, x2: -7526, y2: -4223, epais: 250 }],
-      [28, { x1: 2441, y1: -4323, x2: 3694, y2: -4325, epais: 250 }],
+      [28, { x1: 2441, y1: -4323, x2: 3694, y2: -4324, epais: 250 }],
       [29, { x1: -949, y1: -6583, x2: 304, y2: -6583, epais: 250 }],
       [30, { x1: -7147, y1: 3175, x2: -6147, y2: 3175, epais: 250 }],
       [31, { x1: 12427, y1: -1921, x2: 12427, y2: -1121, epais: 250 }],
