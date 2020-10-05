@@ -3,6 +3,10 @@ services:
     b:
         image: "node:10.21.0"
         working_dir: /home/node/app
+        env_file:
+        - ./.env
+        ports:
+        - ${PORT}:${PORT}
         volumes:
         - ./:/home/node/app
         command: "npm run test:ci:docker"

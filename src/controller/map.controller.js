@@ -1,5 +1,5 @@
 const mapService = require('../service/map.service')
-const mapDescription = require('../service/loadPlan.json')
+const mapDescription = require('../../tests/mockdatas/nolae-house.json')
 
 const svgMap = mapService.getMap(mapDescription)
 

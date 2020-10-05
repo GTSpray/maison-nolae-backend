@@ -1,52 +1,14 @@
+const { permute } = require('./helpers/random.helper')
+const { invertWall } = require('./helpers/map.help')
+
 const mapService = require('../src/service/map.service')
-const archifacile = require('../src/service/loadPlan3.json')
-const nolaeHouse = require('../src/service/loadPlan.json')
+
+const archifacile = require('./mockdatas/testing-plan.json')
+const nolaeHouse = require('./mockdatas/nolae-house.json')
+
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
 const d3 = require('d3')
-
-function perm (xs) {
-  const ret = []
-
-  for (let i = 0; i < xs.length; i = i + 1) {
-    const rest = perm(xs.slice(0, i).concat(xs.slice(i + 1)))
-
-    if (!rest.length) {
-      ret.push([xs[i]])
-    } else {
-      for (let j = 0; j < rest.length; j = j + 1) {
-        ret.push([xs[i]].concat(rest[j]))
-      }
-    }
-  }
-  return ret
-}
-
-expect.extend({
-  matchOrder (received, expected) {
-    const n = `${received},${received}`
-    const pass = (expected.split(',')).length === (received.split(',')).length &&
-    (n.search(expected) !== -1 || n.search((expected.split(',').reverse()).join(',')) !== -1)
-    return {
-      pass,
-      message: () => pass ? '' : `expected ${received} to match with order ${expected}`
-    }
-  }
-})
-
-const invertWall = (w) => {
-  const invertAttr = (a, attr1, attr2) => {
-    const v1 = a[attr1]
-    const v2 = a[attr2]
-
-    a[attr1] = v2
-    a[attr2] = v1
-  }
-
-  invertAttr(w, 'x1', 'x2')
-  invertAttr(w, 'y1', 'y2')
-  invertAttr(w, 'p1', 'p2')
-}
 
 describe('archifacile integration', () => {
   describe('Path', () => {
@@ -64,7 +26,7 @@ describe('archifacile integration', () => {
 
     const iWalls = wallList.map((_e, i) => i)
     const expectedOrder = wallList.map((e) => e.wall).join(',')
-    const permutations = perm(wallList.map(e => e.wall)).map(e => e.join(','))
+    const permutations = permute(wallList.map(e => e.wall)).map(e => e.join(','))
 
     describe.each(permutations)(
       'in order %s',
@@ -80,7 +42,7 @@ describe('archifacile integration', () => {
           const path = new mapService.Path(walls)
           path.resolve()
           const wallOrder = path.walls.map(e => e.wall).join(',')
-          expect(wallOrder).matchOrder(expectedOrder)
+          expect(wallOrder).matchWallOrder(expectedOrder)
         })
 
         describe('with inversed walls', () => {
@@ -91,7 +53,7 @@ describe('archifacile integration', () => {
               const path = new mapService.Path(walls)
               path.resolve()
               const wallOrder = path.walls.map(e => e.wall).join(',')
-              expect(wallOrder).matchOrder(expectedOrder)
+              expect(wallOrder).matchWallOrder(expectedOrder)
             })
 
             it.each(
@@ -101,7 +63,7 @@ describe('archifacile integration', () => {
               const path = new mapService.Path(walls)
               path.resolve()
               const wallOrder = path.walls.map(e => e.wall).join(',')
-              expect(wallOrder).matchOrder(expectedOrder)
+              expect(wallOrder).matchWallOrder(expectedOrder)
             })
           })
         })
@@ -109,7 +71,7 @@ describe('archifacile integration', () => {
     )
   })
 
-  describe('testing plan', () => {
+  describe('Testing plan', () => {
     const dom = new JSDOM(mapService.getMap(archifacile))
     const map = d3.select(dom.window.document.querySelector('svg'))
 
@@ -203,13 +165,13 @@ describe('archifacile integration', () => {
         })
 
         it('should set walls with his walls', () => {
-          expect(path.attr('walls')).matchOrder(desc.walls)
+          expect(path.attr('walls')).matchWallOrder(desc.walls)
         })
       }
     )
   })
 
-  describe('Nolae\'s house', () => {
+  describe('Nolae\'s house plan', () => {
     const dom = new JSDOM(mapService.getMap(nolaeHouse))
     const map = d3.select(dom.window.document.querySelector('svg'))
 
@@ -350,7 +312,7 @@ describe('archifacile integration', () => {
         })
 
         it('should set walls with his walls', () => {
-          expect(path.attr('walls')).matchOrder(desc.walls)
+          expect(path.attr('walls')).matchWallOrder(desc.walls)
         })
       }
     )

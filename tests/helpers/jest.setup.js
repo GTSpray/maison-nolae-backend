@@ -45,5 +45,14 @@ expect.extend({
         )} JWT token contain ${JSON.stringify(expectedPayload, null, 2)}`,
       pass: this.equals(payload, expect.objectContaining(expectedPayload))
     }
+  },
+  matchWallOrder (received, expected) {
+    const n = `${received},${received}`
+    const pass = (expected.split(',')).length === (received.split(',')).length &&
+    (n.search(expected) !== -1 || n.search((expected.split(',').reverse()).join(',')) !== -1)
+    return {
+      pass,
+      message: () => pass ? '' : `expected ${received} to match with order ${expected}`
+    }
   }
 })
