@@ -11,7 +11,7 @@ const { JSDOM } = jsdom
 const d3 = require('d3')
 
 describe('archifacile integration', () => {
-  describe.only('Path', () => {
+  describe('Path', () => {
     const wallList = [
       { x1: 0, y1: 0, x2: 0, y2: 1 },
       { x1: 0, y1: 1, x2: 1, y2: 1 },
@@ -135,6 +135,146 @@ describe('archifacile integration', () => {
             const resolveds = path.resolveSorting(walls)
             const wallOrder = resolveds.map(e => e.id).join(',')
             expect(wallOrder).matchWallSorting(expectedOrder)
+          })
+        }
+      )
+    })
+
+    describe('isNext', () => {
+      const walls = [
+        { x1: 0, y1: 0, x2: 0, y2: 1 },
+        { x1: 0, y1: 1, x2: 1, y2: 1 },
+        { x1: 1, y1: 1, x2: 1, y2: 0 }
+      ].map((e, i) => ({
+        id: i + 1,
+        p1: `x:${e.x1} y:${e.y1}`,
+        p2: `x:${e.x2} y:${e.y2}`,
+        ...e
+      }))
+
+      const path = new mapService.Path([])
+
+      it('should return true when a.p1 is same as b.p2 ', () => {
+        expect(path.isNext(walls[1], walls[0])).toBe(true)
+      })
+
+      it('should return false when a and b are same wall ', () => {
+        expect(path.isNext(walls[0], walls[0])).toBe(false)
+      })
+
+      it('should return true when a.p1 and b.p2 are different ', () => {
+        expect(path.isNext(walls[2], walls[0])).toBe(false)
+      })
+    })
+
+    describe('isPrev', () => {
+      it('should call path.isNext with his arguments inverted', () => {
+        const path = new mapService.Path([])
+
+        const a = 'a'
+        const b = 'b'
+        const isNextReturn = ''
+
+        jest.spyOn(path, 'isNext').mockReturnValue(isNextReturn)
+
+        const ret = path.isPrev(a, b)
+
+        expect(path.isNext).toHaveBeenCalledTimes(1)
+        expect(path.isNext).toHaveBeenCalledWith(b, a)
+        expect(ret).toEqual(isNextReturn)
+      })
+    })
+
+    describe('invert', () => {
+      const path = new mapService.Path([])
+      const wall = {
+        id: 'valueOf_id',
+        x1: 'valueOf_x1',
+        y1: 'valueOf_y1',
+        x2: 'valueOf_x2',
+        y2: 'valueOf_y2',
+        p1: 'valueOf_p1',
+        p2: 'valueOf_p2'
+      }
+
+      const cases = [
+        ['x1', 'x2'],
+        ['y1', 'y2'],
+        ['p1', 'p2']
+      ]
+
+      it.each(cases)(
+        'should invert %s and %s attribute',
+        (attr1, attr2) => {
+          const wallCopy = { ...wall }
+
+          const attr1Before = wallCopy[attr1]
+          const attr2Before = wallCopy[attr2]
+
+          const ret = path.invert(wallCopy)
+
+          expect(attr1Before).not.toEqual(attr2Before)
+          expect(wallCopy[attr1]).toEqual(attr2Before)
+          expect(wallCopy[attr2]).toEqual(attr1Before)
+          expect(ret).toBe(wallCopy)
+        }
+      )
+    })
+
+    describe('isSameOrigin', () => {
+      const walls = [
+        { x1: 0, y1: 0, x2: 0, y2: 1 },
+        { x1: 0, y1: 0, x2: 0, y2: 1 },
+        { x1: 0, y1: 1, x2: 1, y2: 1 }
+      ].map((e, i) => ({
+        id: i + 1,
+        p1: `x:${e.x1} y:${e.y1}`,
+        p2: `x:${e.x2} y:${e.y2}`,
+        ...e
+      }))
+
+      const path = new mapService.Path([])
+
+      it('should return true when a.p1 is same as b.p1 ', () => {
+        expect(path.isSameOrigin(walls[1], walls[0])).toBe(true)
+      })
+
+      it('should return false when a and b are same wall ', () => {
+        expect(path.isSameOrigin(walls[0], walls[0])).toBe(false)
+      })
+
+      it('should return true when a.p1 and b.p1 are different ', () => {
+        expect(path.isSameOrigin(walls[2], walls[0])).toBe(false)
+      })
+    })
+
+    describe('getPath', () => {
+      const cases = wallList.map(e => e.id)
+
+      const path = new mapService.Path([])
+      path.walls = wallList.map((e, i) => ({
+        id: e.id,
+        x1: e.x1 * i,
+        x2: e.x2 * i,
+        y1: e.y1 * i,
+        y2: e.y2 * i
+      }))
+
+      describe.each(cases)(
+        'for wall %s',
+        (wallId) => {
+          let wall, ret
+          beforeEach(() => {
+            wall = path.walls.find(e => e.id === wallId)
+            ret = path.getPath()
+          })
+
+          it('should return array containing his p1', () => {
+            expect(ret).toContainEqual({ x: wall.x1, y: wall.y1 })
+          })
+
+          it('should return array containing his p2', () => {
+            expect(ret).toContainEqual({ x: wall.x2, y: wall.y2 })
           })
         }
       )
