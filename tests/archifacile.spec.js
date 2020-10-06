@@ -12,63 +12,65 @@ const d3 = require('d3')
 
 describe('archifacile integration', () => {
   describe('Path', () => {
-    const wallList = [
-      { x1: 0, y1: 0, x2: 0, y2: 1 },
-      { x1: 0, y1: 1, x2: 1, y2: 1 },
-      { x1: 1, y1: 1, x2: 1, y2: 0 },
-      { x1: 1, y1: 0, x2: 0, y2: 0 }
-    ].map((e, i) => ({
-      wall: i + 1,
-      p1: `x:${e.x1} y:${e.y1}`,
-      p2: `x:${e.x2} y:${e.y2}`,
-      ...e
-    }))
+    describe('resolve', () => {
+      const wallList = [
+        { x1: 0, y1: 0, x2: 0, y2: 1 },
+        { x1: 0, y1: 1, x2: 1, y2: 1 },
+        { x1: 1, y1: 1, x2: 1, y2: 0 },
+        { x1: 1, y1: 0, x2: 0, y2: 0 }
+      ].map((e, i) => ({
+        id: i + 1,
+        p1: `x:${e.x1} y:${e.y1}`,
+        p2: `x:${e.x2} y:${e.y2}`,
+        ...e
+      }))
 
-    const iWalls = wallList.map((_e, i) => i)
-    const expectedOrder = wallList.map((e) => e.wall).join(',')
-    const permutations = permute(wallList.map(e => e.wall)).map(e => e.join(','))
+      const iWalls = wallList.map((_e, i) => i)
+      const expectedOrder = wallList.map((e) => e.id).join(',')
+      const permutations = permute(wallList.map(e => e.id)).map(e => e.join(','))
 
-    describe.each(permutations)(
-      'in order %s',
-      (permutation) => {
-        let walls
-        beforeEach(() => {
-          walls = permutation.split(',').map(id => ({
-            ...wallList[id - 1]
-          }))
-        })
+      describe.each(permutations)(
+        'in order %s',
+        (permutation) => {
+          let walls
+          beforeEach(() => {
+            walls = permutation.split(',').map(id => ({
+              ...wallList[id - 1]
+            }))
+          })
 
-        it('should resolve simple path', () => {
-          const path = new mapService.Path(walls)
-          path.resolve()
-          const wallOrder = path.walls.map(e => e.wall).join(',')
-          expect(wallOrder).matchWallOrder(expectedOrder)
-        })
+          it('should resolve simple path', () => {
+            const path = new mapService.Path(walls)
+            path.resolve()
+            const wallOrder = path.walls.map(e => e.id).join(',')
+            expect(wallOrder).matchWallOrder(expectedOrder)
+          })
 
-        describe('with inversed walls', () => {
-          describe.each(iWalls)('%s has inversed wall', (iWall) => {
-            beforeEach(() => invertWall(walls[iWall]))
+          describe('with inversed walls', () => {
+            describe.each(iWalls)('%s has inversed wall', (iWall) => {
+              beforeEach(() => invertWall(walls[iWall]))
 
-            it(`should resolve path only ${iWall}`, () => {
-              const path = new mapService.Path(walls)
-              path.resolve()
-              const wallOrder = path.walls.map(e => e.wall).join(',')
-              expect(wallOrder).matchWallOrder(expectedOrder)
-            })
+              it(`should resolve path only ${iWall}`, () => {
+                const path = new mapService.Path(walls)
+                path.resolve()
+                const wallOrder = path.walls.map(e => e.id).join(',')
+                expect(wallOrder).matchWallOrder(expectedOrder)
+              })
 
-            it.each(
-              iWalls.filter(e => e !== iWall)
-            )(`should resolve path with ${iWall} and %s`, (inWall) => {
-              invertWall(walls[inWall])
-              const path = new mapService.Path(walls)
-              path.resolve()
-              const wallOrder = path.walls.map(e => e.wall).join(',')
-              expect(wallOrder).matchWallOrder(expectedOrder)
+              it.each(
+                iWalls.filter(e => e !== iWall)
+              )(`should resolve path with ${iWall} and %s`, (inWall) => {
+                invertWall(walls[inWall])
+                const path = new mapService.Path(walls)
+                path.resolve()
+                const wallOrder = path.walls.map(e => e.id).join(',')
+                expect(wallOrder).matchWallOrder(expectedOrder)
+              })
             })
           })
-        })
-      }
-    )
+        }
+      )
+    })
   })
 
   describe('Testing plan', () => {

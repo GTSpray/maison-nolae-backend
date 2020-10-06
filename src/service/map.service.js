@@ -6,15 +6,27 @@ const d3 = require('d3')
 class Path {
   constructor (walls) {
     this.walls = []
-    this.unresolved = [...walls]
+    this.unresolved = walls.map(e => ({
+      p1: `x:${e.x1} y:${e.y1}`,
+      p2: `x:${e.x2} y:${e.y2}`,
+      id: e.id,
+      x1: e.x1,
+      y1: e.y1,
+      x2: e.x2,
+      y2: e.y2
+    }))
   }
 
   isNext (a, b) {
-    return (a.wall !== b.wall && a.p1 === b.p2)
+    return (a.id !== b.id && a.p1 === b.p2)
   }
 
   isPrev (a, b) {
     return this.isNext(b, a)
+  }
+
+  isSameOrigin (a, b) {
+    return (a.id !== b.id && a.p1 === b.p1)
   }
 
   resolve () {
@@ -38,7 +50,7 @@ class Path {
         if (
           (!this.unresolved.some(w => this.isNext(w, inverted)) &&
           !this.unresolved.some(w => this.isPrev(w, inverted))) ||
-          this.unresolved.some(w => w.wall !== inverted.wall && w.p1 === inverted.p1)
+          this.unresolved.some(w => this.isSameOrigin(w, inverted))
         ) {
           invert(inverted)
           acc += 1
@@ -106,13 +118,6 @@ function parseMap (mapDescription) {
         if (!room.exterieur) {
           const iPiece = room.id - 1
           const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
-            .map(e => ({
-              wall: e.id,
-              p1: `x:${e.x1} y:${e.y1}`,
-              p2: `x:${e.x2} y:${e.y2}`,
-              ...e
-            }))
-
           const p = new Path(boundaries)
           p.resolve()
 
@@ -132,7 +137,7 @@ function parseMap (mapDescription) {
     }
   }
 
-  function parseHole (houseDescription, svg) {
+  function parseHoles (houseDescription, svg) {
     const g = svg.append('g').attr('id', 'holes')
     for (const plan of houseDescription.data.plan.plans) {
       for (const hole of plan.trous) {
@@ -160,7 +165,7 @@ function parseMap (mapDescription) {
     }
   }
 
-  function parseWall (houseDescription, svg) {
+  function parseWalls (houseDescription, svg) {
     let minX = Infinity
     let maxX = -Infinity
     let minY = Infinity
@@ -201,9 +206,9 @@ function parseMap (mapDescription) {
   const body = d3.select(dom.window.document.querySelector('body'))
   const svg = body.append('svg').attr('xmlns', 'http://www.w3.org/2000/svg')
 
-  const { minX, minY, maxX, maxY } = parseWall(mapDescription, svg)
+  const { minX, minY, maxX, maxY } = parseWalls(mapDescription, svg)
 
-  parseHole(mapDescription, svg)
+  parseHoles(mapDescription, svg)
   parseRooms(mapDescription, svg)
 
   svg.style('maw-width', '100%')

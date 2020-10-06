@@ -8,10 +8,12 @@ module.exports = {
   getMap: async (_req, res) => {
     res.setHeader('Content-Type', 'image/svg+xml')
 
-    if (!mapDescription || svgMap) {
-      console.log('get')
+    if (!mapDescription) {
       const getDesc = await fetch(`https://www.archifacile.fr/api/loadPlan?cle=${process.env.archifacile_plan_id}`)
       mapDescription = await getDesc.json()
+    }
+
+    if (!svgMap) {
       svgMap = mapService.getMap(mapDescription)
     }
 
