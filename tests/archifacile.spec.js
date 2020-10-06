@@ -41,7 +41,6 @@ describe('archifacile integration', () => {
 
           it('should resolve simple path', () => {
             const path = new mapService.Path(walls)
-            path.resolve()
             const wallOrder = path.walls.map(e => e.id).join(',')
             expect(wallOrder).matchWallOrder(expectedOrder)
           })
@@ -52,7 +51,6 @@ describe('archifacile integration', () => {
 
               it(`should resolve path only ${iWall}`, () => {
                 const path = new mapService.Path(walls)
-                path.resolve()
                 const wallOrder = path.walls.map(e => e.id).join(',')
                 expect(wallOrder).matchWallOrder(expectedOrder)
               })
@@ -62,7 +60,6 @@ describe('archifacile integration', () => {
               )(`should resolve path with ${iWall} and %s`, (inWall) => {
                 invertWall(walls[inWall])
                 const path = new mapService.Path(walls)
-                path.resolve()
                 const wallOrder = path.walls.map(e => e.id).join(',')
                 expect(wallOrder).matchWallOrder(expectedOrder)
               })

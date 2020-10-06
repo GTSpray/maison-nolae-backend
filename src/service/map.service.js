@@ -5,8 +5,7 @@ const d3 = require('d3')
 
 class Path {
   constructor (walls) {
-    this.walls = []
-    this.unresolved = walls.map(e => ({
+    const unresolveds = walls.map(e => ({
       p1: `x:${e.x1} y:${e.y1}`,
       p2: `x:${e.x2} y:${e.y2}`,
       id: e.id,
@@ -15,6 +14,9 @@ class Path {
       x2: e.x2,
       y2: e.y2
     }))
+
+    this.resolveInverted(unresolveds)
+    this.walls = this.resolve(unresolveds)
   }
 
   isNext (a, b) {
@@ -29,7 +31,7 @@ class Path {
     return (a.id !== b.id && a.p1 === b.p1)
   }
 
-  resolve () {
+  resolveInverted (walls) {
     const invert = (w) => {
       const invertAttr = (a, attr1, attr2) => {
         const v1 = a[attr1]
@@ -45,44 +47,42 @@ class Path {
     }
 
     let r
+    let i = 0
     do {
-      r = this.unresolved.reduce((acc, inverted) => {
+      i += 1
+      r = walls.reduce((acc, inverted) => {
         if (
-          (!this.unresolved.some(w => this.isNext(w, inverted)) &&
-          !this.unresolved.some(w => this.isPrev(w, inverted))) ||
-          this.unresolved.some(w => this.isSameOrigin(w, inverted))
+          (!walls.some(w => this.isNext(w, inverted)) &&
+          !walls.some(w => this.isPrev(w, inverted))) ||
+          walls.some(w => this.isSameOrigin(w, inverted))
         ) {
           invert(inverted)
           acc += 1
         }
         return acc
       }, 0)
-    } while (r > 0)
+    } while (r > 0 && i < walls.length)
+  }
 
-    const path = []
-    const unresolveds = [...this.unresolved, ...this.unresolved.reverse()]
-
+  resolve (unresolveds) {
+    const resolveds = []
+    const walls = [...unresolveds, ...unresolveds.reverse()]
     let current
     do {
-      current = unresolveds.splice(0, 1)[0]
+      current = walls.splice(0, 1)[0]
       if (current && !current.resolved) {
-        const iNext = unresolveds.findIndex(w => this.isNext(w, current))
+        const iNext = walls.findIndex(w => this.isNext(w, current))
         if (iNext !== -1) {
           current.resolved = true
-          path.push(current)
-          unresolveds.splice(0, 1, unresolveds[iNext])
-        } else if (path.length > 0 && this.isPrev(current, path[path.length - 1])) {
+          resolveds.push(current)
+          walls.splice(0, 1, walls[iNext])
+        } else if (resolveds.length > 0 && this.isPrev(current, resolveds[resolveds.length - 1])) {
           current.resolved = true
-          path.push(current)
+          resolveds.push(current)
         }
       }
     } while (current)
-
-    this.unresolved = this.unresolved.filter(e => !e.resolved)
-
-    if (path.length > this.walls.length) {
-      this.walls = path
-    }
+    return resolveds
   }
 
   getPath () {
@@ -119,7 +119,6 @@ function parseMap (mapDescription) {
           const iPiece = room.id - 1
           const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
           const p = new Path(boundaries)
-          p.resolve()
 
           g.append('path')
             .attr('class', 'room')
