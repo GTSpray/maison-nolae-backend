@@ -10,6 +10,7 @@ const invertWall = (w) => {
   invertAttr(w, 'x1', 'x2')
   invertAttr(w, 'y1', 'y2')
   invertAttr(w, 'p1', 'p2')
+  return w
 }
 
 module.exports = {

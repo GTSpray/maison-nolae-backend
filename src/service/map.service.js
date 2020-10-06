@@ -16,7 +16,7 @@ class Path {
     }))
 
     this.resolveInverted(unresolveds)
-    this.walls = this.resolve(unresolveds)
+    this.walls = this.resolveSorting(unresolveds)
   }
 
   isNext (a, b) {
@@ -31,21 +31,20 @@ class Path {
     return (a.id !== b.id && a.p1 === b.p1)
   }
 
-  resolveInverted (walls) {
-    const invert = (w) => {
-      const invertAttr = (a, attr1, attr2) => {
-        const v1 = a[attr1]
-        const v2 = a[attr2]
-        a[attr1] = v2
-        a[attr2] = v1
-      }
-
-      invertAttr(w, 'x1', 'x2')
-      invertAttr(w, 'y1', 'y2')
-      invertAttr(w, 'p1', 'p2')
-      return w
+  invert (w) {
+    const invertAttr = (a, attr1, attr2) => {
+      const v1 = a[attr1]
+      const v2 = a[attr2]
+      a[attr1] = v2
+      a[attr2] = v1
     }
+    invertAttr(w, 'x1', 'x2')
+    invertAttr(w, 'y1', 'y2')
+    invertAttr(w, 'p1', 'p2')
+    return w
+  }
 
+  resolveInverted (walls) {
     let r
     let i = 0
     do {
@@ -56,7 +55,7 @@ class Path {
           !walls.some(w => this.isPrev(w, inverted))) ||
           walls.some(w => this.isSameOrigin(w, inverted))
         ) {
-          invert(inverted)
+          this.invert(inverted)
           acc += 1
         }
         return acc
@@ -64,7 +63,7 @@ class Path {
     } while (r > 0 && i < walls.length)
   }
 
-  resolve (unresolveds) {
+  resolveSorting (unresolveds) {
     const resolveds = []
     const walls = [...unresolveds, ...unresolveds.reverse()]
     let current

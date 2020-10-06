@@ -11,24 +11,115 @@ const { JSDOM } = jsdom
 const d3 = require('d3')
 
 describe('archifacile integration', () => {
-  describe('Path', () => {
-    describe('resolve', () => {
-      const wallList = [
-        { x1: 0, y1: 0, x2: 0, y2: 1 },
-        { x1: 0, y1: 1, x2: 1, y2: 1 },
-        { x1: 1, y1: 1, x2: 1, y2: 0 },
-        { x1: 1, y1: 0, x2: 0, y2: 0 }
+  describe.only('Path', () => {
+    const wallList = [
+      { x1: 0, y1: 0, x2: 0, y2: 1 },
+      { x1: 0, y1: 1, x2: 1, y2: 1 },
+      { x1: 1, y1: 1, x2: 1, y2: 0 },
+      { x1: 1, y1: 0, x2: 0, y2: 0 }
+    ].map((e, i) => ({
+      id: i + 1,
+      p1: `x:${e.x1} y:${e.y1}`,
+      p2: `x:${e.x2} y:${e.y2}`,
+      ...e
+    }))
+
+    describe('resolveInverted', () => {
+      let walls
+      let path
+      beforeEach(() => {
+        walls = wallList.map(wall => ({
+          ...wall
+        }))
+
+        path = new mapService.Path([])
+        jest.spyOn(path, 'invert')
+      })
+
+      it('should not invert wall when all of them have next', () => {
+        path.resolveInverted(walls)
+        expect(path.invert).toHaveBeenCalledTimes(0)
+      })
+
+      const cases1Inverted = [
+        0,
+        1,
+        2
+        // 3 // 3 times
+      ]
+      it.each(cases1Inverted)(
+        'should resolve path with %s has inverted wall',
+        (iWall) => {
+          invertWall(walls[iWall])
+
+          path.resolveInverted(walls)
+
+          expect(path.invert).toHaveBeenCalledTimes(1)
+        }
+      )
+
+      const cases2Inverteds = [
+        [0, 1],
+        [0, 2],
+        [0, 3],
+        [1, 2],
+        // [1, 3], // 4 times
+        [2, 3]
+      ]
+      it.each(cases2Inverteds)(
+        'should resolve path with %s and %s has inverteds walls',
+        (iWall1, iWall2) => {
+          invertWall(walls[iWall1])
+          invertWall(walls[iWall2])
+
+          path.resolveInverted(walls)
+
+          expect(path.invert).toHaveBeenCalledTimes(2)
+        }
+      )
+
+      const cases3Inverteds = [
+        // [ 1, 2, 3 ], // 1 time
+        [0, 2, 3],
+        [0, 1, 3],
+        [0, 1, 2]
+      ]
+      it.each(cases3Inverteds)(
+        'should resolve path with [%s,%s,%s] has inverteds wall',
+        (iWall1, iWall2, iWall3) => {
+          invertWall(walls[iWall1])
+          invertWall(walls[iWall2])
+          invertWall(walls[iWall3])
+
+          path.resolveInverted(walls)
+
+          expect(path.invert).toHaveBeenCalledTimes(3)
+        }
+      )
+
+      const infiniteCases = [
+        { x1: -1, y1: -1, x2: -1, y2: -1 }, // out of path
+        { x1: 1, y1: 0, x2: -1, y2: -1 } // same origin
       ].map((e, i) => ({
-        id: i + 1,
+        id: wallList.length + i + 1,
         p1: `x:${e.x1} y:${e.y1}`,
         p2: `x:${e.x2} y:${e.y2}`,
         ...e
       }))
+      it.each(infiniteCases)(
+        'should prevent infinite loop when a wall is not connected to others',
+        (dangerousWall) => {
+          walls.push(dangerousWall)
 
-      const iWalls = wallList.map((_e, i) => i)
+          path.resolveInverted(walls)
+
+          expect(path.invert).toHaveBeenCalledTimes(5)
+        })
+    })
+
+    describe('resolveSorting', () => {
       const expectedOrder = wallList.map((e) => e.id).join(',')
       const permutations = permute(wallList.map(e => e.id)).map(e => e.join(','))
-
       describe.each(permutations)(
         'in order %s',
         (permutation) => {
@@ -40,30 +131,10 @@ describe('archifacile integration', () => {
           })
 
           it('should resolve simple path', () => {
-            const path = new mapService.Path(walls)
-            const wallOrder = path.walls.map(e => e.id).join(',')
-            expect(wallOrder).matchWallOrder(expectedOrder)
-          })
-
-          describe('with inversed walls', () => {
-            describe.each(iWalls)('%s has inversed wall', (iWall) => {
-              beforeEach(() => invertWall(walls[iWall]))
-
-              it(`should resolve path only ${iWall}`, () => {
-                const path = new mapService.Path(walls)
-                const wallOrder = path.walls.map(e => e.id).join(',')
-                expect(wallOrder).matchWallOrder(expectedOrder)
-              })
-
-              it.each(
-                iWalls.filter(e => e !== iWall)
-              )(`should resolve path with ${iWall} and %s`, (inWall) => {
-                invertWall(walls[inWall])
-                const path = new mapService.Path(walls)
-                const wallOrder = path.walls.map(e => e.id).join(',')
-                expect(wallOrder).matchWallOrder(expectedOrder)
-              })
-            })
+            const path = new mapService.Path([])
+            const resolveds = path.resolveSorting(walls)
+            const wallOrder = resolveds.map(e => e.id).join(',')
+            expect(wallOrder).matchWallSorting(expectedOrder)
           })
         }
       )
@@ -164,7 +235,7 @@ describe('archifacile integration', () => {
         })
 
         it('should set walls with his walls', () => {
-          expect(path.attr('walls')).matchWallOrder(desc.walls)
+          expect(path.attr('walls')).matchWallSorting(desc.walls)
         })
       }
     )
@@ -311,7 +382,7 @@ describe('archifacile integration', () => {
         })
 
         it('should set walls with his walls', () => {
-          expect(path.attr('walls')).matchWallOrder(desc.walls)
+          expect(path.attr('walls')).matchWallSorting(desc.walls)
         })
       }
     )

@@ -46,7 +46,7 @@ expect.extend({
       pass: this.equals(payload, expect.objectContaining(expectedPayload))
     }
   },
-  matchWallOrder (received, expected) {
+  matchWallSorting (received, expected) {
     const n = `${received},${received}`
     const pass = (expected.split(',')).length === (received.split(',')).length &&
     (n.search(expected) !== -1 || n.search((expected.split(',').reverse()).join(',')) !== -1)
