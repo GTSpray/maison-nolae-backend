@@ -4,7 +4,7 @@ const { cors } = require('./middleware/header.middleware')
 const { error } = require('./middleware/error.middleware')
 
 const { hello } = require('./controller/hello.controller')
-const { contracts } = require('./controller/contracts.controller')
+const { contracts } = require('./controller/contracts.controller');
 
 const express = require('express')
 const bodyParser = require('body-parser')
