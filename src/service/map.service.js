@@ -199,6 +199,31 @@ function parseMap (mapDescription) {
     }
   }
 
+  function parseObjects (houseDescription, svg) {
+    const g = svg.append('g').attr('id', 'obj')
+    for (const plan of houseDescription.data.plan.plans) {
+      for (const obj of plan.objets) {
+        const w = Math.round(obj.l)
+        const h = Math.round(obj.h)
+        const x = Math.round(obj.x - (w / 2))
+        const y = Math.round(obj.y - (h / 2))
+
+        const oriX = Math.round(obj.x)
+        const oriY = Math.round(obj.y)
+        const angle = Math.round(obj.a)
+
+        g
+          .append('rect')
+          .attr('id', `obj${obj.id}`)
+          .attr('x', x)
+          .attr('y', y)
+          .attr('width', w)
+          .attr('height', h)
+          .attr('transform', `rotate(${angle},${oriX},${oriY})`)
+      }
+    }
+  }
+
   const dom = new JSDOM('<!DOCTYPE html><body></body>')
 
   const body = d3.select(dom.window.document.querySelector('body'))
@@ -207,6 +232,8 @@ function parseMap (mapDescription) {
   const { minX, minY, maxX, maxY } = parseWalls(mapDescription, svg)
 
   parseHoles(mapDescription, svg)
+
+  parseObjects(mapDescription, svg)
   parseRooms(mapDescription, svg)
 
   svg.style('maw-width', '100%')
