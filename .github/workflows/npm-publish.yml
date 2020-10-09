@@ -1,0 +1,32 @@
+name: Auto lint
+
+on:
+  push:
+    branches:
+    - '*'         # matches every branch that doesn't contain a '/'
+    - '*/*'       # matches every branch containing a single '/'
+    - '**'        # matches every branch
+    - '!master'   # excludes master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - run: npm i
+        
+      - name: Auto lint 
+        run: npm run lint:fix
+      
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v5
+        with:
+          author_name: AutoLinter
+          author_email: no-reply@github.com
+          message: "Auto Lint"
+          add: "*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
