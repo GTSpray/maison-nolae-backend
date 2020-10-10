@@ -215,6 +215,7 @@ function parseMap (mapDescription) {
         g
           .append('rect')
           .attr('id', `obj${obj.id}`)
+          .attr('class', 'obj')
           .attr('x', x)
           .attr('y', y)
           .attr('width', w)
