@@ -1,14 +1,13 @@
 const { permute } = require('./helpers/random.helper')
 const { invertWall } = require('./helpers/map.help')
 
-const mapService = require('../src/service/map.service')
-const { MapParser } = require('../src/service/map.service')
+const { MapParser, WallSorter } = require('../src/service/map.service')
 
 const archifacile = require('./mockdatas/testing-plan.json')
 const nolaeHouse = require('./mockdatas/nolae-house.json')
 
 describe('archifacile integration', () => {
-  describe('Path', () => {
+  describe('WallSorter', () => {
     const wallList = [
       { x1: 0, y1: 0, x2: 0, y2: 1 },
       { x1: 0, y1: 1, x2: 1, y2: 1 },
@@ -29,7 +28,7 @@ describe('archifacile integration', () => {
           ...wall
         }))
 
-        path = new mapService.Path([])
+        path = new WallSorter([])
         jest.spyOn(path, 'invert')
       })
 
@@ -128,7 +127,7 @@ describe('archifacile integration', () => {
           })
 
           it('should resolve simple path', () => {
-            const path = new mapService.Path([])
+            const path = new WallSorter([])
             const resolveds = path.resolveSorting(walls)
             const wallOrder = resolveds.map(e => e.id).join(',')
             expect(wallOrder).matchWallSorting(expectedOrder)
@@ -149,7 +148,7 @@ describe('archifacile integration', () => {
         ...e
       }))
 
-      const path = new mapService.Path([])
+      const path = new WallSorter([])
 
       it('should return true when a.p1 is same as b.p2 ', () => {
         expect(path.isNext(walls[1], walls[0])).toBe(true)
@@ -166,7 +165,7 @@ describe('archifacile integration', () => {
 
     describe('isPrev', () => {
       it('should call path.isNext with his arguments inverted', () => {
-        const path = new mapService.Path([])
+        const path = new WallSorter([])
 
         const a = 'a'
         const b = 'b'
@@ -183,7 +182,7 @@ describe('archifacile integration', () => {
     })
 
     describe('invert', () => {
-      const path = new mapService.Path([])
+      const path = new WallSorter([])
       const wall = {
         id: 'valueOf_id',
         x1: 'valueOf_x1',
@@ -230,7 +229,7 @@ describe('archifacile integration', () => {
         ...e
       }))
 
-      const path = new mapService.Path([])
+      const path = new WallSorter([])
 
       it('should return true when a.p1 is same as b.p1 ', () => {
         expect(path.isSameOrigin(walls[1], walls[0])).toBe(true)
@@ -248,7 +247,7 @@ describe('archifacile integration', () => {
     describe('getPath', () => {
       const cases = wallList.map(e => e.id)
 
-      const path = new mapService.Path([])
+      const path = new WallSorter([])
       path.walls = wallList.map((e, i) => ({
         id: e.id,
         x1: e.x1 * i,

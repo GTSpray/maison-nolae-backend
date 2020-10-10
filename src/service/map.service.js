@@ -3,7 +3,7 @@ const { JSDOM } = jsdom
 
 const d3 = require('d3')
 
-class Path {
+class WallSorter {
   constructor (walls) {
     const unresolveds = walls.map(e => ({
       p1: `x:${e.x1} y:${e.y1}`,
@@ -160,9 +160,11 @@ class MapParser {
         const x2 = x1 + cos * hole.large
         const y2 = y1 + sin * hole.large
 
+        const type = hole.sorte < 200 ? 'door' : 'window'
+
         g
           .append('line')
-          .attr('id', `hole${hole.id}`)
+          .attr('id', `hole${hole.id} ${type}`)
           .attr('x1', Math.round(x1))
           .attr('y1', Math.round(y1))
           .attr('x2', Math.round(x2))
@@ -184,7 +186,7 @@ class MapParser {
         if (!room.exterieur) {
           const iPiece = room.id - 1
           const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
-          const p = new Path(boundaries)
+          const p = new WallSorter(boundaries)
 
           g.append('path')
             .attr('class', 'room')
@@ -215,6 +217,12 @@ class MapParser {
         const oriY = Math.round(obj.y)
         const angle = Math.round(obj.a)
 
+        this.minX = Math.min(this.minX, x - w)
+        this.minY = Math.min(this.minY, y - h)
+
+        this.maxX = Math.max(this.maxX, x + w)
+        this.maxY = Math.max(this.maxY, y + h)
+
         g
           .append('rect')
           .attr('id', `obj${obj.id}`)
@@ -224,15 +232,16 @@ class MapParser {
           .attr('width', w)
           .attr('height', h)
           .attr('transform', `rotate(${angle},${oriX},${oriY})`)
+          .append('svg:title').text(obj.nom)
       }
     }
   }
 
   parse () {
-    this.parseWalls()
     this.parseRooms()
+    this.parseWalls()
     this.parseHoles()
-    this.parseObjects()
+    // this.parseObjects()
     this.svg.attr(
       'viewBox',
       `${this.minX} ${this.minY} ${this.maxX - this.minX} ${this.maxY - this.minY}`
@@ -245,6 +254,6 @@ class MapParser {
 }
 
 module.exports = {
-  Path,
+  WallSorter,
   MapParser
 }
