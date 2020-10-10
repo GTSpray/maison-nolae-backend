@@ -96,8 +96,23 @@ class Path {
   }
 }
 
-function parseMap (mapDescription) {
-  function getRandomColor (alpha) {
+class MapParser {
+  constructor (mapDescription) {
+    const dom = new JSDOM('<!DOCTYPE html><body></body>')
+    this.body = d3.select(dom.window.document.querySelector('body'))
+    this.svg = this.body.append('svg')
+      .attr('xmlns', 'http://www.w3.org/2000/svg')
+      .style('maw-width', '100%')
+      .style('maw-height', '100%')
+
+    this.mapDescription = mapDescription
+    this.minX = Infinity
+    this.maxX = -Infinity
+    this.minY = Infinity
+    this.maxY = -Infinity
+  }
+
+  getRandomColor (alpha) {
     const a = alpha || 1
     const num = Math.round(0xffffff * Math.random())
     const r = num >> 16
@@ -106,38 +121,33 @@ function parseMap (mapDescription) {
     return `rgba(${r},${g},${b},${a})`
   }
 
-  function parseRooms (houseDescription, svg) {
-    const toD = d3.line()
-      .x((d) => d.x)
-      .y((d) => d.y)
+  parseWalls () {
+    for (const plan of this.mapDescription.data.plan.plans) {
+      const g = this.svg.append('g').attr('id', `plan${plan.etage}`)
+      for (const wall of plan.murs) {
+        this.minX = Math.min(this.minX, wall.x1 - wall.epais, wall.x2 - wall.epais)
+        this.minY = Math.min(this.minY, wall.y1 - wall.epais, wall.y2 - wall.epais)
 
-    for (const plan of houseDescription.data.plan.plans) {
-      const g = svg.append('g').attr('id', 'rooms')
-      for (const room of plan.pieces) {
-        if (!room.exterieur) {
-          const iPiece = room.id - 1
-          const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
-          const p = new Path(boundaries)
+        this.maxX = Math.max(this.maxX, wall.x1 + wall.epais, wall.x2 + wall.epais)
+        this.maxY = Math.max(this.maxY, wall.y1 + wall.epais, wall.y2 + wall.epais)
 
-          g.append('path')
-            .attr('class', 'room')
-            .attr('id', `room${room.id}`)
-            .attr('name', room.nom)
-            .attr('walls', p.walls.map(e => e.id))
-            .attr('title', room.nom)
-            .attr('d', toD(p.getPath()))
-            .style('stroke', getRandomColor())
-            .style('stroke-width', 100)
-            .style('fill', getRandomColor(0.3))
-            .append('svg:title').text(room.nom)
-        }
+        g.append('line')
+          .attr('id', `wall${wall.id}`)
+          .attr('x1', wall.x1)
+          .attr('y1', wall.y1)
+          .attr('x2', wall.x2)
+          .attr('y2', wall.y2)
+          .attr('class', 'wall')
+          .style('stroke-width', wall.epais)
+          .style('stroke', 'orange')
+          .style('stroke-linecap', 'square')
       }
     }
   }
 
-  function parseHoles (houseDescription, svg) {
-    const g = svg.append('g').attr('id', 'holes')
-    for (const plan of houseDescription.data.plan.plans) {
+  parseHoles () {
+    const g = this.svg.append('g').attr('id', 'holes')
+    for (const plan of this.mapDescription.data.plan.plans) {
       for (const hole of plan.trous) {
         const wall = plan.murs.find(m => m.id === hole.imur)
 
@@ -163,45 +173,38 @@ function parseMap (mapDescription) {
     }
   }
 
-  function parseWalls (houseDescription, svg) {
-    let minX = Infinity
-    let maxX = -Infinity
-    let minY = Infinity
-    let maxY = -Infinity
-    for (const plan of houseDescription.data.plan.plans) {
-      const g = svg.append('g').attr('id', `plan${plan.etage}`)
-      for (const wall of plan.murs) {
-        minX = Math.min(minX, wall.x1 - wall.epais, wall.x2 - wall.epais)
-        minY = Math.min(minY, wall.y1 - wall.epais, wall.y2 - wall.epais)
+  parseRooms () {
+    const toD = d3.line()
+      .x((d) => d.x)
+      .y((d) => d.y)
 
-        maxX = Math.max(maxX, wall.x1 + wall.epais, wall.x2 + wall.epais)
-        maxY = Math.max(maxY, wall.y1 + wall.epais, wall.y2 + wall.epais)
+    for (const plan of this.mapDescription.data.plan.plans) {
+      const g = this.svg.append('g').attr('id', 'rooms')
+      for (const room of plan.pieces) {
+        if (!room.exterieur) {
+          const iPiece = room.id - 1
+          const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
+          const p = new Path(boundaries)
 
-        const color = 'orange'
-        g.append('line')
-          .attr('id', `wall${wall.id}`)
-          .attr('x1', wall.x1)
-          .attr('y1', wall.y1)
-          .attr('x2', wall.x2)
-          .attr('y2', wall.y2)
-          .attr('class', 'wall')
-          .style('stroke-width', wall.epais)
-          .style('stroke', color)
-          .style('stroke-linecap', 'square')
+          g.append('path')
+            .attr('class', 'room')
+            .attr('id', `room${room.id}`)
+            .attr('name', room.nom)
+            .attr('walls', p.walls.map(e => e.id))
+            .attr('title', room.nom)
+            .attr('d', toD(p.getPath()))
+            .style('stroke', this.getRandomColor())
+            .style('stroke-width', 100)
+            .style('fill', this.getRandomColor(0.3))
+            .append('svg:title').text(room.nom)
+        }
       }
-    }
-
-    return {
-      minX,
-      minY,
-      maxX,
-      maxY
     }
   }
 
-  function parseObjects (houseDescription, svg) {
-    const g = svg.append('g').attr('id', 'obj')
-    for (const plan of houseDescription.data.plan.plans) {
+  parseObjects () {
+    const g = this.svg.append('g').attr('id', 'obj')
+    for (const plan of this.mapDescription.data.plan.plans) {
       for (const obj of plan.objets) {
         const w = Math.round(obj.l)
         const h = Math.round(obj.h)
@@ -225,25 +228,23 @@ function parseMap (mapDescription) {
     }
   }
 
-  const dom = new JSDOM('<!DOCTYPE html><body></body>')
+  parse () {
+    this.parseWalls()
+    this.parseRooms()
+    this.parseHoles()
+    this.parseObjects()
+    this.svg.attr(
+      'viewBox',
+      `${this.minX} ${this.minY} ${this.maxX - this.minX} ${this.maxY - this.minY}`
+    )
+  }
 
-  const body = d3.select(dom.window.document.querySelector('body'))
-  const svg = body.append('svg').attr('xmlns', 'http://www.w3.org/2000/svg')
-
-  const { minX, minY, maxX, maxY } = parseWalls(mapDescription, svg)
-
-  parseHoles(mapDescription, svg)
-
-  parseObjects(mapDescription, svg)
-  parseRooms(mapDescription, svg)
-
-  svg.style('maw-width', '100%')
-  svg.style('maw-height', '100%')
-  svg.attr('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`)
-  return body
+  getSvg () {
+    return this.body.html()
+  }
 }
 
 module.exports = {
-  getMap: (mapDescription) => parseMap(mapDescription).html(),
-  Path
+  Path,
+  MapParser
 }

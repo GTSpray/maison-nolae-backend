@@ -2,13 +2,10 @@ const { permute } = require('./helpers/random.helper')
 const { invertWall } = require('./helpers/map.help')
 
 const mapService = require('../src/service/map.service')
+const { MapParser } = require('../src/service/map.service')
 
 const archifacile = require('./mockdatas/testing-plan.json')
 const nolaeHouse = require('./mockdatas/nolae-house.json')
-
-const jsdom = require('jsdom')
-const { JSDOM } = jsdom
-const d3 = require('d3')
 
 describe('archifacile integration', () => {
   describe('Path', () => {
@@ -282,11 +279,11 @@ describe('archifacile integration', () => {
   })
 
   describe('Testing plan', () => {
-    const dom = new JSDOM(mapService.getMap(archifacile))
-    const map = d3.select(dom.window.document.querySelector('svg'))
+    const parser = new MapParser(archifacile)
+    parser.parse()
 
     it('should set viewbox of map boudaries', () => {
-      expect(map.attr('viewBox')).toEqual('-3668 -3122 19884 18252')
+      expect(parser.svg.attr('viewBox')).toEqual('-3668 -3122 19884 18252')
     })
 
     const walls = archifacile.data.plan.plans.reduce((acc, plan) => {
@@ -299,7 +296,7 @@ describe('archifacile integration', () => {
       (wallId, desc) => {
         let line
         beforeAll(() => {
-          line = map.select(`line#wall${wallId}`)
+          line = parser.svg.select(`line#wall${wallId}`)
         })
         it('should make a line', () => {
           expect(line).toBeDefined()
@@ -332,7 +329,7 @@ describe('archifacile integration', () => {
       (wallId, desc) => {
         let line
         beforeAll(() => {
-          line = map.select(`line#hole${wallId}`)
+          line = parser.svg.select(`line#hole${wallId}`)
         })
         it('should make a line', () => {
           expect(line).toBeDefined()
@@ -366,7 +363,7 @@ describe('archifacile integration', () => {
       (_roomNam, desc) => {
         let path
         beforeAll(() => {
-          path = map.select(`path#room${desc.id}`)
+          path = parser.svg.select(`path#room${desc.id}`)
         })
 
         it('should make a path', () => {
@@ -382,11 +379,11 @@ describe('archifacile integration', () => {
   })
 
   describe('Nolae\'s house plan', () => {
-    const dom = new JSDOM(mapService.getMap(nolaeHouse))
-    const map = d3.select(dom.window.document.querySelector('svg'))
+    const parser = new MapParser(nolaeHouse)
+    parser.parse()
 
     it('should set viewbox of map boudaries', () => {
-      expect(map.attr('viewBox')).toEqual('-12877 -8658 25554 12083')
+      expect(parser.svg.attr('viewBox')).toEqual('-12877 -8658 25554 12083')
     })
 
     const walls = nolaeHouse.data.plan.plans.reduce((acc, plan) => {
@@ -399,7 +396,7 @@ describe('archifacile integration', () => {
       (wallId, desc) => {
         let line
         beforeAll(() => {
-          line = map.select(`line#wall${wallId}`)
+          line = parser.svg.select(`line#wall${wallId}`)
         })
         it('should make a line', () => {
           expect(line).toBeDefined()
@@ -463,7 +460,7 @@ describe('archifacile integration', () => {
       (wallId, desc) => {
         let line
         beforeAll(() => {
-          line = map.select(`line#hole${wallId}`)
+          line = parser.svg.select(`line#hole${wallId}`)
         })
         it('should make a line', () => {
           expect(line).toBeDefined()
@@ -513,7 +510,7 @@ describe('archifacile integration', () => {
       (_roomNam, desc) => {
         let path
         beforeAll(() => {
-          path = map.select(`path#room${desc.id}`)
+          path = parser.svg.select(`path#room${desc.id}`)
         })
 
         it('should make a path', () => {

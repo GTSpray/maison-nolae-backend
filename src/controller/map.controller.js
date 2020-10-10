@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 
-const mapService = require('../service/map.service')
+const { MapParser } = require('../service/map.service')
 let mapDescription
 let svgMap
 
@@ -14,7 +14,9 @@ module.exports = {
     }
 
     if (!svgMap) {
-      svgMap = mapService.getMap(mapDescription)
+      const parser = new MapParser(mapDescription)
+      parser.parse()
+      svgMap = parser.getSvg()
     }
 
     res.send(svgMap)
