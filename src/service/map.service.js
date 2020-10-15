@@ -164,7 +164,8 @@ class MapParser {
 
         g
           .append('line')
-          .attr('id', `hole${hole.id} ${type}`)
+          .attr('id', `hole${hole.id}`)
+          .attr('class', `hole ${type}`)
           .attr('x1', Math.round(x1))
           .attr('y1', Math.round(y1))
           .attr('x2', Math.round(x2))
@@ -186,19 +187,20 @@ class MapParser {
         if (!room.exterieur) {
           const iPiece = room.id - 1
           const boundaries = plan.murs.filter(m => m.cote.some(c => c.iPiece === iPiece))
-          const p = new WallSorter(boundaries)
+          const parser = new WallSorter(boundaries)
 
           g.append('path')
             .attr('class', 'room')
             .attr('id', `room${room.id}`)
             .attr('name', room.nom)
-            .attr('walls', p.walls.map(e => e.id))
+            .attr('walls', parser.walls.map(e => e.id))
             .attr('title', room.nom)
-            .attr('d', toD(p.getPath()))
+            .attr('d', toD(parser.getPath()))
             .style('stroke', this.getRandomColor())
             .style('stroke-width', 100)
             .style('fill', this.getRandomColor(0.3))
             .append('svg:title').text(room.nom)
+          // todo add "z" after path and add path of child rooms
         }
       }
     }
